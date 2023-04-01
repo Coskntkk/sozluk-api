@@ -1,0 +1,12 @@
+{
+    "auth": {
+        "success": {
+            "register": "User created successfully. Please verify your email.",
+            "login": "Logged in successfully.",
+            "getAccessToken": "Access token generated successfully",
+            "checkLogin": "Logged in successfully.",
+            "logout": "Logged out successfully.",
+            "sendPasswordResetEmail": "Password reset email sent successfully."
+        }
+    }
+}

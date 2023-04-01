@@ -1,0 +1,12 @@
+{
+    "auth": {
+        "success": {
+            "register": "Kullanıcı başarıyla kaydedildi. Lütfen e-posta adresinizi kontrol edin.",
+            "login": "Giriş başarılı.",
+            "getAccessToken": "Erişim anahtarı başarıyla oluşturuldu.",
+            "checkLogin": "Giriş başarılı.",
+            "logout": "Çıkış başarılı.",
+            "sendPasswordResetEmail": "Şifre sıfırlama e-postası başarıyla gönderildi."
+        }
+    }
+}
