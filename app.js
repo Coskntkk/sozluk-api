@@ -19,7 +19,7 @@ app.use(
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE"],
         exposedHeaders: ["x-total-count", "x-access-token", "x-refresh-token"],
-        domain: ["http://localhost:6000", "http://localhost:6001"]
+        domain: ["http://localhost:3030", "http://localhost:3030"]
     })
 );
 app.use(express.json());

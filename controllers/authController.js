@@ -2,11 +2,19 @@
 const { User, Role } = require("../db/models");
 // 3rd party
 const { Op } = require("sequelize");
+const jwt = require("jsonwebtoken");
 // Utils
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const { registerEmail, changePassword } = require("../utils/emailFunctions");
-const { isPasswordCorrect, generateInitialTokens, generateAccessToken, createVerificationToken, verifyVerificationToken } = require("../utils/authFunctions");
+const {
+    decryptToken,
+    isPasswordCorrect,
+    generateInitialTokens,
+    generateAccessToken,
+    createVerificationToken,
+    verifyVerificationToken
+} = require("../utils/authFunctions");
 
 // Register User
 // POST /api/v1/auth/register
@@ -70,8 +78,8 @@ exports.login = catchAsync(async (req, res, next) => {
     res.header("x-refresh-token", refresh_token);
     // Get user
     let result = await User.findByPk(user.id, {
-        attributes: ["id", "username", "email"],
-        include: [{ model: Role, attributes: ["name"] }],
+        attributes: ["id", "username"],
+        include: [{ model: Role }],
     });
     // Send response
     res.status(200).json({
@@ -102,6 +110,12 @@ exports.getAccessToken = catchAsync(async (req, res) => {
 // GET /api/v1/auth/checkLogin
 exports.checkLogin = catchAsync(async (req, res) => {
     // This route is only accessible if the user is logged in so there is no need to do any checks
+    let user = await User.findByPk(req.user.id, { attributes: ["access_token", "refresh_token"] });
+    let access_token = await decryptToken(user.access_token);
+    let refresh_token = await decryptToken(user.refresh_token);
+    // Send response
+    res.header("x-access-token", access_token);
+    res.header("x-refresh-token", refresh_token);
     res.status(200).json({
         success: true,
         message: req.resps.auth.success.checkLogin,

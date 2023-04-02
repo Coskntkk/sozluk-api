@@ -171,6 +171,7 @@ const verifyVerificationToken = async (token) => {
 };
 
 module.exports = {
+    decryptToken,
     isPasswordCorrect,
     generateAccessToken,
     generateInitialTokens,
