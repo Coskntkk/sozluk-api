@@ -1,6 +1,5 @@
 // Utils
-const respEn = require("../utils/responses/en.json");
-const respTr = require("../utils/responses/tr.json");
+const responses = require("../utils/responses.json");
 
 // Configure the request
 const configureReq = () => {
@@ -8,7 +7,7 @@ const configureReq = () => {
         try {
             // Set language
             let lang = req.headers["accept-language"] || "en";
-            req.resps = lang === "en" ? respEn : respTr;
+            req.msg = responses[lang] || responses["en"];
             // Continue
             next();
         } catch (error) {

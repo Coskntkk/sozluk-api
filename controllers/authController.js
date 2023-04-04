@@ -48,7 +48,7 @@ exports.register = catchAsync(async (req, res, next) => {
     // Send response
     res.status(200).json({
         success: true,
-        message: "User created successfully. Please verify your email.",
+        message: req.msg.auth.success.register,
         data: result,
     });
 });
@@ -84,7 +84,7 @@ exports.login = catchAsync(async (req, res, next) => {
     // Send response
     res.status(200).json({
         success: true,
-        message: req.resps.auth.success.login,
+        message: req.msg.auth.success.login,
         data: result,
     });
 });
@@ -101,7 +101,7 @@ exports.getAccessToken = catchAsync(async (req, res) => {
     res.header("x-access-token", access_token);
     res.status(200).json({
         success: true,
-        message: req.resps.auth.success.getAccessToken,
+        message: req.msg.auth.success.getAccessToken,
         data: access_token,
     });
 });
@@ -118,7 +118,7 @@ exports.checkLogin = catchAsync(async (req, res) => {
     res.header("x-refresh-token", refresh_token);
     res.status(200).json({
         success: true,
-        message: req.resps.auth.success.checkLogin,
+        message: req.msg.auth.success.checkLogin,
         data: {
             id: req.user.id,
             username: req.user.username,
@@ -147,7 +147,7 @@ exports.logout = catchAsync(async (req, res) => {
     // Send response
     res.status(200).json({
         success: true,
-        message: req.resps.auth.success.logout,
+        message: req.msg.auth.success.logout,
         data: null,
     });
 });
@@ -187,7 +187,7 @@ exports.sendPasswordResetEmail = catchAsync(async (req, res, next) => {
     // Send response
     res.status(200).json({
         success: true,
-        message: req.resps.auth.success.sendPasswordResetEmail,
+        message: req.msg.auth.success.sendPasswordResetEmail,
         data: null,
     });
 });
