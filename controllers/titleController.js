@@ -2,6 +2,7 @@
 const { Title, Entry, User, Vote } = require("../db/models");
 // 3rd party
 const slugify = require('slugify');
+const sequelize = require("sequelize");
 // Utils
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
@@ -9,23 +10,32 @@ const catchAsync = require("../utils/catchAsync");
 // Get all titles
 // GET /api/v1/titles
 exports.getAllTitles = catchAsync(async (req, res) => {
-    let { page, limit } = req.query;
+    let { page, limit, keyword } = req.query;
     // Find all titles
     let titles = await Title.findAndCountAll({
+        where: keyword ? { name: { [sequelize.Op.like]: `%${keyword}%` } } : {},
         offset: (page - 1) * limit,
         limit: limit,
         order: [
             ["created_at", "DESC"]
         ],
+        // Include entry count
+        attributes: {
+            include:
+                [
+                    [
+                        sequelize.literal(
+                            `(
+                                SELECT COUNT(*)
+                                FROM entry
+                                WHERE entry.title_id = title.id
+                            )`
+                        ),
+                        "entry_count"
+                    ]
+                ],
+        },
     });
-    // Count entries for each title
-    titles.rows = await Promise.all(titles.rows.map(async (title) => {
-        title = title.toJSON();
-        let entry = await Entry.count({ where: { title_id: title.id } });
-        title.entry_count = entry;
-        title.entries = "/api/v1/titles/" + title.id + "/entries";
-        return title;
-    }));
     // Return response
     res.status(200).json({
         status: "success",
@@ -75,31 +85,73 @@ exports.createTitle = catchAsync(async (req, res, next) => {
 });
 
 // Get a title by slug or id
-// GET /api/v1/titles/:slug
+// GET /api/v1/titles/:id
 exports.getTitleBySlugOrId = catchAsync(async (req, res, next) => {
-    let { slugorid } = req.params;
-    // Find title by slug
-    let title = await Title.findOne({ where: { slug: slugorid } });
+    const { id } = req.params;
+    const { page, limit } = req.query;
+    // Find title
+    const title = await Title.findOne({
+        where: {
+            [sequelize.Op.or]: [
+                { id: id },
+                { slug: id },
+                { slug: slugify(id) }
+            ]
+        },
+    });
     if (!title) {
-        slugorid = slugify(slugorid, { lower: true });
-        // Find title by slug
-        title = await Title.findOne({ where: { slug: slugorid } });
-        if (!title) {
-            // Find title by id
-            title = await Title.findByPk(slugorid);
-            if (!title) {
-                return next(new AppError("Title not found", 404));
-            }
-        }
+        return next(new AppError("Title not found", 404));
     }
-    // Count entries for the title
-    let entry_count = await Entry.count({ where: { title_id: title.id } });
+    // Find entries
+    const entries = await Entry.findAndCountAll({
+        offset: (page - 1) * limit,
+        limit: limit,
+        order: [
+            ["created_at", "ASC"]
+        ],
+        where: { title_id: title.id },
+        include: [
+            {
+                model: User,
+                attributes: ["username", "id", "created_at", "image_url"],
+            }
+        ],
+        attributes: {
+            include: [
+                [
+                    sequelize.literal(`(
+                        SELECT is_upvote
+                        FROM vote
+                        WHERE vote.entry_id = entry.id AND vote.user_id = ${req.user ? req.user.id : 0}
+                    )`),
+                    "userVote"
+                ],
+                [
+                    (sequelize.literal(`(
+                        SELECT COUNT(*)
+                        FROM vote
+                        WHERE vote.entry_id = entry.id AND vote.is_upvote = true
+                    ) - (
+                        SELECT COUNT(*)
+                        FROM vote
+                        WHERE vote.entry_id = entry.id AND vote.is_upvote = false
+                    )`)),
+                    "points"
+                ],
+            ]
+        }
+    });
     // Return response
-    let response = { ...title.toJSON(), entry_count, entries: "/api/v1/titles/" + title.id + "/entries" };
     res.status(200).json({
         status: "success",
-        message: "Title fetched successfully",
-        data: response
+        message: "Entries fetched successfully",
+        data: {
+            page: page,
+            limit: limit,
+            total: entries.count,
+            title: title,
+            items: entries.rows,
+        }
     });
 });
 
@@ -151,46 +203,6 @@ exports.deleteTitleById = catchAsync(async (req, res, next) => {
     });
 });
 
-// Get entries by title slug
-// GET /api/v1/titles/:id/entries
-exports.getEntriesByTitleId = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const { page, limit } = req.query;
-    // Find title
-    const title = await Title.findByPk(id);
-    if (!title) {
-        return next(new AppError("Title not found", 404));
-    }
-    // Find entries
-    const entries = await Entry.findAndCountAll({
-        offset: (page - 1) * limit,
-        limit: limit,
-        order: [
-            ["created_at", "DESC"]
-        ],
-        where: { title_id: id },
-        attributes: { exclude: ["user_id"] },
-        include: [
-            {
-                model: User,
-                attributes: ["username", "id", "created_at", "image_url"],
-            }
-        ],
-    });
-    // Return response
-    res.status(200).json({
-        status: "success",
-        message: "Entries fetched successfully",
-        data: {
-            page: page,
-            limit: limit,
-            total: entries.count,
-            title: title,
-            items: entries.rows,
-        }
-    });
-});
-
 // Create an entry by title id
 // POST /api/v1/titles/:id/entries
 exports.createEntryByTitleId = catchAsync(async (req, res, next) => {
@@ -204,9 +216,19 @@ exports.createEntryByTitleId = catchAsync(async (req, res, next) => {
     // Create entry
     const entry = await Entry.create({ message, title_id: id, user_id: req.user.id });
     // Return response
+    let response = await Entry.findOne({
+        where: { id: entry.id },
+        attributes: { exclude: ["user_id"] },
+        include: [
+            {
+                model: User,
+                attributes: ["username", "id", "created_at", "image_url"],
+            }
+        ],
+    });
     res.status(201).json({
         status: "success",
         message: "Entry created successfully",
-        data: entry
+        data: response
     });
 });

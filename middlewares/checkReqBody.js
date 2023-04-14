@@ -8,7 +8,7 @@ const checkReqBody = (parameters) => {
             // Check if all parameters are provided
             let missingParams = [];
             parameters.map(parameter => {
-                if (!req.body[parameter]) {
+                if (["", null, undefined].includes(req.body[parameter])) {
                     missingParams.push(parameter);
                 }
             });

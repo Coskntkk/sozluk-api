@@ -4,6 +4,7 @@ const { ErrorLog } = require('../db/models');
 
 // Sending errors in development mode
 const sendErrorDevelopment = (error, res) => {
+  console.log("Error: ", error);
   return res.status(error.statusCode).json({
     success: false,
     message: error.message,

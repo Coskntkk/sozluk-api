@@ -7,6 +7,7 @@ const checkAuthorization = require('../middlewares/checkAuthorization');
 const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 const checkPagination = require('../middlewares/checkPagination');
+const checkUser = require('../middlewares/checkUser');
 
 // Import controllers
 const titleController = require('../controllers/titleController');
@@ -32,9 +33,11 @@ router.post(
 
 // Get title by slug or id
 router.get(
-    "/:slugorid",
+    "/:id",
+    checkUser(),
+    checkPagination(),
     checkAuthorization("title_read", Title),
-    checkReqParams(["slugorid"]),
+    checkReqParams(["id"]),
     titleController.getTitleBySlugOrId
 );
 
@@ -55,15 +58,6 @@ router.delete(
     checkAuthorization("title_delete", Title),
     checkReqParams(["id"]),
     titleController.deleteTitleById
-);
-
-// Get entries by title id
-router.get(
-    "/:id/entries",
-    checkReqParams(["id"]),
-    checkAuthorization("entry_read", Title),
-    checkPagination(),
-    titleController.getEntriesByTitleId
 );
 
 // Create entry by title id

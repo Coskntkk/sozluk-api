@@ -31,10 +31,8 @@ exports.getEntryById = catchAsync(async (req, res, next) => {
     if (req.user) {
         const existingVote = await Vote.findOne({ where: { user_id: req.user.id, entry_id: entry.id } });
         if (existingVote) {
-            entry.dataValues.voted = true;
             entry.dataValues.userUpvote = existingVote.is_upvote;
         } else {
-            entry.dataValues.voted = false;
             entry.dataValues.userUpvote = null;
         }
     }

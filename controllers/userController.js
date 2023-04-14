@@ -1,9 +1,9 @@
 // Db
+const request = require("request");
 const { User, Role, Entry, Title } = require("../db/models");
 // Utils
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const { isPasswordCorrect } = require("../utils/authFunctions");
 
 // Get all users
 // GET /api/v1/users
@@ -58,6 +58,29 @@ exports.getUserById = catchAsync(async (req, res, next) => {
         message: "User fetched successfully",
         data: user,
     });
+});
+
+// Get a user's image by id
+// GET /api/v1/users/:id/image
+exports.getUserImageById = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    // Find user
+    const user = await User.findByPk(id, { attributes: ["image_url"] });
+    if (!user || !user.image_url) {
+        return next(new AppError("User not found", 404));
+    }
+    request({
+        url: user.image_url,
+        encoding: null
+    },
+        (err, resp, buffer) => {
+            if (!err && resp.statusCode === 200) {
+                res.set("Content-Type", "image/jpeg");
+                res.send(resp.body);
+            } else {
+                next(new AppError("Image not found", 404));
+            }
+        });
 });
 
 // Update a user by id

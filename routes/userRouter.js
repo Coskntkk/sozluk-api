@@ -28,6 +28,14 @@ router.get(
     userController.getUserById
 );
 
+// Get user image by id
+router.get(
+    "/:id/image",
+    checkReqParams(["id"]),
+    checkAuthorization("user_read", User),
+    userController.getUserImageById
+);
+
 // Update user by id
 router.put(
     "/:id",
