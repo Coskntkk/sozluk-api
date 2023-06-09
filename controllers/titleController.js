@@ -52,7 +52,9 @@ exports.getAllTitles = catchAsync(async (req, res) => {
 // Create a title
 // POST /api/v1/titles
 exports.createTitle = catchAsync(async (req, res, next) => {
-    const { name, message } = req.body;
+    let { name, message } = req.body;
+    name = name.trim().toLowerCase().substring(0, 70);
+    message = message.trim().toLowerCase().substring(0, 280);
     // Check if title already exists
     const titleExists = await Title.findOne({ where: { name } });
     if (titleExists) {
@@ -207,7 +209,8 @@ exports.deleteTitleById = catchAsync(async (req, res, next) => {
 // POST /api/v1/titles/:id/entries
 exports.createEntryByTitleId = catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const { message } = req.body;
+    let { message } = req.body;
+    message = message.trim().toLowerCase().substring(0, 280);
     // Find title
     const title = await Title.findByPk(id);
     if (!title) {

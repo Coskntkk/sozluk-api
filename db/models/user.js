@@ -23,10 +23,6 @@ const User = postgres.define(
             type: Sequelize.STRING,
             allowNull: true,
         },
-        access_token: {
-            type: Sequelize.CHAR(512),
-            allowNull: true,
-        },
         refresh_token: {
             type: Sequelize.CHAR(512),
             allowNull: true,

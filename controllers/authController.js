@@ -94,9 +94,7 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.getAccessToken = catchAsync(async (req, res) => {
     const { refresh_token } = req.body;
     // Generate access token
-    const { access_token, userId } = await generateAccessToken(refresh_token);
-    // Save access token to db
-    await User.update({ access_token }, { where: { id: userId } });
+    const access_token = await generateAccessToken(refresh_token);
     // Send response
     res.header("x-access-token", access_token);
     res.status(200).json({
@@ -111,8 +109,8 @@ exports.getAccessToken = catchAsync(async (req, res) => {
 exports.checkLogin = catchAsync(async (req, res) => {
     // This route is only accessible if the user is logged in so there is no need to do any checks
     let user = await User.findByPk(req.user.id, { attributes: ["access_token", "refresh_token"] });
-    let access_token = await decryptToken(user.access_token);
     let refresh_token = await decryptToken(user.refresh_token);
+    let access_token = await generateAccessToken(refresh_token)
     // Send response
     res.header("x-access-token", access_token);
     res.header("x-refresh-token", refresh_token);
@@ -134,13 +132,8 @@ exports.checkLogin = catchAsync(async (req, res) => {
 exports.logout = catchAsync(async (req, res) => {
     // Remove tokens from db
     await User.update(
-        {
-            refresh_token: null,
-            access_token: null,
-        },
-        {
-            where: { id: req.user.id }
-        }
+        { refresh_token: null },
+        { where: { id: req.user.id } }
     );
     // Remove tokens from header
     res.header("x-refresh-token", "");

@@ -20,12 +20,12 @@ router.get(
     userController.getAllUsers
 );
 
-// Get user by id
+// Get user by username
 router.get(
-    "/:id",
-    checkReqParams(["id"]),
+    "/:username",
+    checkReqParams(["username"]),
     checkAuthorization("user_read", User),
-    userController.getUserById
+    userController.getUserByUsername
 );
 
 // Get user image by id
@@ -67,11 +67,11 @@ router.delete(
 
 // Get entries by user id
 router.get(
-    "/:id/entries",
+    "/:username/entries",
     checkAuthorization("entry_read", Entry),
-    checkReqParams(["id"]),
+    checkReqParams(["username"]),
     checkPagination(),
-    userController.getEntriesByUserId
+    userController.getEntriesByUserName
 );
 
 // Export router

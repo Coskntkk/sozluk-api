@@ -4,7 +4,7 @@ const { User, Role } = require("../db/models");
 const jwt = require("jsonwebtoken");
 // Utils
 const AppError = require("../utils/appError");
-const { checkIsAccessTokenValid, generateAccessToken } = require("../utils/authFunctions");
+const { checkIsAccessTokenValid } = require("../utils/authFunctions");
 const catchAsync = require("../utils/catchAsync");
 
 // Checks if the client is authenticated

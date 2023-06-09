@@ -33,8 +33,7 @@ const checkAuthentication = () => {
         // Check if token is expired
         if (decoded.expire < Date.now()) {
             // Generate new token
-            const { access_token, access_token_encrypted, userId } = await generateAccessToken(req.headers["x-refresh-token"]);
-            await User.update({ access_token: access_token_encrypted }, { where: { id: userId } });
+            const access_token = await generateAccessToken(req.headers["x-refresh-token"]);
             res.header("x-access-token", access_token);
         }
         // Set user to request

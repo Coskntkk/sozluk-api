@@ -36,12 +36,13 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     });
 });
 
-// Get a user by id
-// GET /api/v1/users/:id
-exports.getUserById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
+// Get a user by username
+// GET /api/v1/users/:username
+exports.getUserByUsername = catchAsync(async (req, res, next) => {
+    const { username } = req.params;
     // Find user
-    const user = await User.findByPk(id, {
+    const user = await User.findOne({
+        where: { username },
         attributes: {
             exclude: ["password", "refresh_token", "access_token", "role_id"]
         },
@@ -151,13 +152,14 @@ exports.deleteUserById = catchAsync(async (req, res, next) => {
     });
 });
 
-// Get entries by user id
-// GET /api/v1/users/:id/entries
-exports.getEntriesByUserId = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
+// Get entries by user username
+// GET /api/v1/users/:username/entries
+exports.getEntriesByUserName = catchAsync(async (req, res, next) => {
+    const { username } = req.params;
     const { page, limit } = req.query;
     // Find user
-    const user = await User.findByPk(id, {
+    const user = await User.findOne({
+        where: { username: username },
         attributes: {
             exclude: ["password", "refresh_token", "access_token", "role_id"]
         },
@@ -176,7 +178,7 @@ exports.getEntriesByUserId = catchAsync(async (req, res, next) => {
             ["created_at", "DESC"]
         ],
         attributes: { exclude: ["title_id"] },
-        where: { user_id: id },
+        where: { user_id: user.id },
         include: [
             {
                 model: Title,

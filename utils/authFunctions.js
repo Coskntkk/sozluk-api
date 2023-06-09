@@ -98,10 +98,6 @@ const generateInitialTokens = async (user) => {
     const access_token = await jwt.sign(access_token_payload, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1d",
     });
-    // Encrypt access token
-    const access_token_encrypted = await encryptToken(access_token);
-    // Save access token to database
-    user.access_token = access_token_encrypted;
     // Save user
     await user.save();
     // Return tokens
@@ -120,23 +116,12 @@ const generateAccessToken = async (refresh_token) => {
     const access_token = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1d",
     });
-    // Encrypt access token
-    const access_token_encrypted = await encryptToken(token);
     // Return access token
-    return {
-        access_token,
-        access_token_encrypted,
-        userId: refresh_token_decoded.id,
-    };
+    return access_token;
 };
 
 // Check if access token is valid
 const checkIsAccessTokenValid = async (access_token, user) => {
-    // Check if access token is valid and matches the access token in the database
-    let user_access_token_encrypted = await decryptToken(user.access_token);
-    if (user_access_token_encrypted.trim() !== access_token.trim()) {
-        return false;
-    }
     // Check if access token is valid and matches the refresh token
     let access_decoded = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET);
     let refresh_decrypted = await decryptToken(user.refresh_token);
