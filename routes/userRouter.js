@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Entry } = require('../db/models');
+const { User, Entry, Title } = require('../db/models');
 
 // Middlewares
 const checkAuthentication = require('../middlewares/checkAuthentication');
@@ -7,8 +7,7 @@ const checkAuthorization = require('../middlewares/checkAuthorization');
 const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 const checkPagination = require('../middlewares/checkPagination');
-// Import controllers
-const userController = require('../controllers/userController');
+const { getUsers, getUserByParam, updateUserByParam } = require('../controllers/userController');
 
 // Set routes
 //* /api/v1/users/
@@ -17,7 +16,23 @@ router.get(
     "/",
     checkPagination(),
     checkAuthorization("user_read", User),
-    userController.getAllUsers
+    async (req, res) => {
+        try {
+            const users = await getUsers(req.query)
+            // Return response
+            res.status(200).json({
+                success: true,
+                data: {
+                    page: page,
+                    limit: limit,
+                    total: users.count,
+                    items: users.rows,
+                }
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Get user by username
@@ -25,15 +40,20 @@ router.get(
     "/:username",
     checkReqParams(["username"]),
     checkAuthorization("user_read", User),
-    userController.getUserByUsername
-);
-
-// Get user image by id
-router.get(
-    "/:id/image",
-    checkReqParams(["id"]),
-    checkAuthorization("user_read", User),
-    userController.getUserImageById
+    async (req, res, next) => {
+        try {
+            const { username } = req.params;
+            // Find user
+            const user = await getUserByParam({ username: username })
+            // Return response
+            res.status(200).json({
+                success: true,
+                data: user,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Update user by id
@@ -42,36 +62,64 @@ router.put(
     checkAuthentication(),
     checkAuthorization("user_update", User),
     checkReqParams(["id"]),
-    checkReqBody(["username", "email", "image_url"]),
-    userController.updateUserById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            // Update use
+            const user = await updateUserByParam({ id }, req.body)
+            // Return response
+            res.status(200).json({
+                success: true,
+                data: user,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
-// Update user password by id
-router.put(
-    "/:id/password",
-    checkAuthentication(),
-    checkAuthorization("user_update", User),
-    checkReqParams(["id"]),
-    checkReqBody(["password"]),
-    userController.updateUserPasswordById
-);
+const getEntriesByParams = async (data, params) => {
+    const { limit, page } = data
+    const entries = await Entry.findAndCountAll({
+        offset: (page - 1) * limit,
+        // limit: limit,
+        order: [["created_at", "DESC"]],
+        where: { ...params },
+        include: [
+            {
+                model: Title,
+                attributes: ["name", "id", "slug"],
+            },
+        ]
+    });
+    return entries
+}
 
-// Delete user by id
-router.delete(
-    "/:id",
-    checkAuthentication(),
-    checkAuthorization("user_delete", User),
-    checkReqParams(["id"]),
-    userController.deleteUserById
-);
-
-// Get entries by user id
+// Get entries by user username
 router.get(
-    "/:username/entries",
+    "/:id/entries",
     checkAuthorization("entry_read", Entry),
-    checkReqParams(["username"]),
+    checkReqParams(["id"]),
     checkPagination(),
-    userController.getEntriesByUserName
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const { page, limit } = req.query;
+            const entries = await getEntriesByParams(req.query, { user_id: id })
+            // Return response
+            res.status(200).json({
+                success: true,
+                data: {
+                    page: page,
+                    limit: limit,
+                    total: entries.count,
+                    items: entries.rows,
+                }
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Export router

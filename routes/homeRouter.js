@@ -1,16 +1,11 @@
 const router = require('express').Router();
-const { Title } = require('../db/models');
+const { getEntriesByTitleId } = require('../controllers/entryController');
+const { getLatestTitle } = require('../controllers/titleController');
+
 
 // Middlewares
-const checkAuthentication = require('../middlewares/checkAuthentication');
-const checkAuthorization = require('../middlewares/checkAuthorization');
-const checkReqBody = require('../middlewares/checkReqBody');
-const checkReqParams = require('../middlewares/checkReqParams');
 const checkPagination = require('../middlewares/checkPagination');
 const checkUser = require('../middlewares/checkUser');
-
-// Import controllers
-const homeController = require('../controllers/homeController');
 
 // Set routes
 //* /api/v1/home/
@@ -19,8 +14,24 @@ router.get(
     "/latest",
     checkUser(),
     checkPagination(),
-    checkAuthorization("title_read", Title),
-    homeController.getLatestTitle
+    async (req, res, next) => {
+        try {
+            let title = await getLatestTitle()
+            let entries = await getEntriesByTitleId(title.id)
+            // Return response
+            res.status(200).json({
+                success: true,
+                data: {
+                    total: entries.count,
+                    total_pages: Math.ceil(entries.count / 10),
+                    title: title,
+                    items: entries.rows
+                }
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Export router

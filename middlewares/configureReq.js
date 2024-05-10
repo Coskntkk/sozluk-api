@@ -1,13 +1,10 @@
-// Utils
-const responses = require("../utils/responses.json");
-
 // Configure the request
 const configureReq = () => {
     return function (req, res, next) {
         try {
             // Set language
             let lang = req.headers["accept-language"] || "en";
-            req.msg = responses[lang] || responses["en"];
+            req.msg = global.responses[lang] || global.responses["en"];
             // Continue
             next();
         } catch (error) {

@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const postgres = require("../postgres");
 const bcrypt = require("bcrypt");
+const Role = require("./role");
 
 const User = postgres.define(
     "user",
@@ -35,6 +36,7 @@ const User = postgres.define(
     },
     {
         timestamps: true,
+        paranoid: true,
     }
 );
 

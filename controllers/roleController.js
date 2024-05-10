@@ -1,89 +1,47 @@
 // Db
-const { Role } = require("../db/models");
+const { Role, User } = require("../db/models");
 const AppError = require("../utils/appError");
-// Utils
-const catchAsync = require("../utils/catchAsync");
 
-// Get all roles
-// GET /api/v1/roles/
-exports.getAllRoles = catchAsync(async (req, res) => {
-    // Find roles
-    const roles = await Role.findAll({order: [['id', 'ASC']]});
-    // Send response
-    res.status(200).json({
-        success: true,
-        message: "Roles fetched successfully",
-        data: roles,
-    });
-});
+const getRoles = async () => {
+    return await Role.findAll({ order: [['id', 'ASC']] });
+};
 
-// Create Role
-// POST /api/v1/roles/
-exports.createRole = catchAsync(async (req, res) => {
-    const { name } = req.body;
-    // Create role
-    const role = await Role.create({ name: name });
-    // Send response
-    res.status(200).json({
-        success: true,
-        message: "Role created successfully",
-        data: role,
-    });
-});
+const getRoleByParams = async (params) => {
+    return await Role.findOne({ where: { ...params } })
+};
 
-// Get role by id
-// GET /api/v1/roles/:id
-exports.getRoleById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
+const createRole = async (params) => {
+    const { name } = params
+    return await Role.create({
+        name: name,
+        permissions: []
+    })
+}
+
+const updateRoleByParams = async (params, data) => {
+    const role = await Role.update({ where: { ...params } });
+    Object.keys(data).forEach((key) => {
+        role[key] = data[key]
+    })
+    await role.save()
+    return role.toJSON()
+};
+
+const deleteRoleByParams = async (params) => {
     // Find role
-    const role = await Role.findByPk(id);
-    if (!role) {
-        return next(new AppError("Entry not found", 404));
-    }
-    // Send response
-    res.status(200).json({
-        success: true,
-        message: "Role fetched successfully",
-        data: role,
-    });
-});
-
-// Update role by id
-// PUT /api/v1/roles/:id
-exports.updateRoleById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const { name } = req.body;
-    // Find role
-    const role = await Role.findByPk(id);
-    if (!role) {
-        return next(new AppError("Role not found", 404));
-    }
-    // Update role
-    role.name = name;
-    await role.save();
-    // Send response
-    res.status(200).json({
-        success: true,
-        message: "Role updated successfully",
-        data: role,
-    });
-});
-
-// Delete role by id
-// DELETE /api/v1/roles/:id
-exports.deleteRoleById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    // Find role
-    const role = await Role.findByPk(id);
-    if (!role) {
-        return next(new AppError("Role not found", 404));
-    }
+    const role = await Role.findOne({ where: { ...params } });
+    if (!role) throw new AppError("Role not found", 404);
+    // Check if there are users with this role
+    const userCount = await User.count({ where: { roleId: id } });
+    if (userCount && userCount > 0) throw new AppError("There are users with this role.")
     // Delete role
-    await role.destroy();
-    // Send response
-    res.status(200).json({
-        success: true,
-        message: "Role deleted successfully",
-        data: role,
-    });
-});
+    await role.destroy()
+};
+
+module.exports = {
+    getRoles,
+    createRole,
+    getRoleByParams,
+    updateRoleByParams,
+    deleteRoleByParams
+}

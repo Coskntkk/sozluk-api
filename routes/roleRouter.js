@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { getRoles, createRole, getRoleByParams, deleteRoleByParams, updateRoleByParams } = require('../controllers/roleController');
 const { Role } = require('../db/models');
 
 // Middlewares
@@ -6,8 +7,6 @@ const checkAuthentication = require('../middlewares/checkAuthentication');
 const checkAuthorization = require('../middlewares/checkAuthorization');
 const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
-// Import controllers
-const roleController = require('../controllers/roleController');
 
 // Set routes
 //* /api/v1/roles/
@@ -16,7 +15,19 @@ router.get(
     "/",
     checkAuthentication(),
     checkAuthorization("role_read", Role),
-    roleController.getAllRoles
+    async (req, res, next) => {
+        try {
+            // Create role
+            const roles = await getRoles()
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: roles,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Create new role
@@ -25,7 +36,19 @@ router.post(
     checkAuthentication(),
     checkAuthorization("role_create", Role),
     checkReqBody(["name"]),
-    roleController.createRole
+    async (req, res, next) => {
+        try {
+            // Create role
+            const role = await createRole(req.body)
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: role,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Get role by id
@@ -34,7 +57,20 @@ router.get(
     checkAuthentication(),
     checkAuthorization("role_read", Role),
     checkReqParams(["id"]),
-    roleController.getRoleById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            // Find role
+            const role = await getRoleByParams({ id: id })
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: role,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Update role by id
@@ -44,7 +80,21 @@ router.put(
     checkAuthorization("role_update", Role),
     checkReqParams(["id"]),
     checkReqBody(["name"]),
-    roleController.updateRoleById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            // Find role
+            const role = await updateRoleByParams({ id: id }, req.body)
+            // Send response
+            res.status(200).json({
+                success: true,
+                message: "Role updated successfully",
+                data: role,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Delete role by id
@@ -53,7 +103,17 @@ router.delete(
     checkAuthentication(),
     checkAuthorization("role_delete", Role),
     checkReqParams(["id"]),
-    roleController.deleteRoleById
+    async (req, res, next) => {
+        try {
+            await deleteRoleByParams({ id: id })
+            // Send response
+            res.status(200).json({
+                success: true
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Export router

@@ -5,6 +5,7 @@ const Title = require("./models/title");
 const Entry = require("./models/entry");
 const Vote = require("./models/vote");
 const ActionLog = require("./models/action_log");
+const Permission = require("./models/permission")
 const ErrorLog = require("./models/error_log");
 
 // Relationships
@@ -35,6 +36,7 @@ User.hasMany(Vote, { foreignKey: "user_id" });
 module.exports = {
     User,
     Role,
+    Permission,
     Title,
     Entry,
     Vote,

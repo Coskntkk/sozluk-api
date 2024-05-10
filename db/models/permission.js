@@ -1,22 +1,14 @@
 const Sequelize = require("sequelize");
 const postgres = require("../postgres");
 
-const Role = postgres.define(
-    "role",
+const Permission = postgres.define(
+    "permission",
     {
         name: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true,
-        },
-        permissions: {
-            type: Sequelize.JSONB,
-            default: []
         }
-    },
-    {
-        timestamps: true,
-    }
-);
+    });
 
-module.exports = Role;
+module.exports = Permission;

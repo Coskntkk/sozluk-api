@@ -1,200 +1,41 @@
 // Db
-const request = require("request");
-const { User, Role, Entry, Title } = require("../db/models");
-// Utils
+const { User, Role } = require("../db/models");
 const AppError = require("../utils/appError");
-const catchAsync = require("../utils/catchAsync");
+// Utils
 
-// Get all users
-// GET /api/v1/users
-exports.getAllUsers = catchAsync(async (req, res) => {
-    let { page, limit } = req.query;
-    // Find all users
+const getUsers = async (data) => {
+    const { limit, page } = data
     const users = await User.findAndCountAll({
         offset: (page - 1) * limit,
         limit: limit,
-        order: [
-            ["created_at", "DESC"]
-        ],
-        attributes: {
-            exclude: ["password", "refresh_token", "access_token", "role_id"]
-        },
-        include: [
-            { model: Role, attributes: ["name", "id"] }
-        ]
+        order: [["created_at", "DESC"]],
+        attributes: { exclude: ["password", "refresh_token", "access_token"] },
+        include: [{ model: Role, attributes: ["name", "id"] }]
     });
-    // Return response
-    res.status(200).json({
-        status: "success",
-        message: "Users fetched successfully",
-        data: {
-            page: page,
-            limit: limit,
-            total: users.count,
-            items: users.rows,
-        }
-    });
-});
+    return users
+}
 
-// Get a user by username
-// GET /api/v1/users/:username
-exports.getUserByUsername = catchAsync(async (req, res, next) => {
-    const { username } = req.params;
-    // Find user
-    const user = await User.findOne({
-        where: { username },
-        attributes: {
-            exclude: ["password", "refresh_token", "access_token", "role_id"]
-        },
-        include: [
-            { model: Role, attributes: ["name", "id"] }
-        ]
-    });
-    if (!user) {
-        return next(new AppError("User not found", 404));
-    }
-    // Return response
-    res.status(200).json({
-        success: true,
-        message: "User fetched successfully",
-        data: user,
-    });
-});
+const getUserByParam = async (param) => {
+    return await User.findOne({
+        where: { ...param },
+        attributes: { exclude: ["password", "refresh_token", "access_token", "role_id"] },
+        include: [{ model: Role, attributes: ["name", "id"] }]
+    })
+}
 
-// Get a user's image by id
-// GET /api/v1/users/:id/image
-exports.getUserImageById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    // Find user
-    const user = await User.findByPk(id, { attributes: ["image_url"] });
-    if (!user || !user.image_url) {
-        return next(new AppError("User not found", 404));
-    }
-    request({
-        url: user.image_url,
-        encoding: null
-    },
-        (err, resp, buffer) => {
-            if (!err && resp.statusCode === 200) {
-                res.set("Content-Type", "image/jpeg");
-                res.send(resp.body);
-            } else {
-                next(new AppError("Image not found", 404));
-            }
-        });
-});
+const updateUserByParam = async (param, data) => {
+    const user = await User.findOne({ where: { ...param } })
+    if (!user) throw new AppError('User not found.', 400)
+    Object.keys(data).forEach((key) => {
+        user[key] = data[key]
+    })
+    await user.save()
+    return user.toJSON()
+}
 
-// Update a user by id
-// PUT /api/v1/users/:id
-exports.updateUserById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const { username, image_url } = req.body;
-    // Find user
-    const user = await User.findByPk(id, {
-        attributes: {
-            exclude: ["password", "refresh_token", "access_token", "role_id"]
-        },
-        include: [
-            { model: Role, attributes: ["name", "id"] }
-        ]
-    });
-    if (!user) {
-        next(new AppError("User not found", 404));
-    }
-    // Update user
-    await user.update({ username, image_url });
-    // Return response
-    res.status(200).json({
-        success: true,
-        message: "User updated successfully",
-        data: user,
-    });
-});
 
-// Update a user's password by id
-// PUT /api/v1/users/:id/password
-exports.updateUserPasswordById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    const { password } = req.body;
-    // Find user
-    const user = await User.findByPk(id);
-    if (!user) {
-        return next(new AppError("User not found", 404));
-    }
-    // Update user password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-    await user.save();
-    // Return response
-    res.status(200).json({
-        success: true,
-        message: "User password updated successfully",
-        data: null,
-    });
-});
-
-// Delete a user by id
-// DELETE /api/v1/users/:id
-exports.deleteUserById = catchAsync(async (req, res, next) => {
-    const { id } = req.params;
-    // Find user
-    const user = await User.findByPk(id);
-    if (!user) {
-        return next(new AppError("User not found", 404));
-    }
-    // Delete user
-    await user.destroy();
-    // Return response
-    res.status(200).json({
-        success: true,
-        message: "User deleted successfully",
-        data: null,
-    });
-});
-
-// Get entries by user username
-// GET /api/v1/users/:username/entries
-exports.getEntriesByUserName = catchAsync(async (req, res, next) => {
-    const { username } = req.params;
-    const { page, limit } = req.query;
-    // Find user
-    const user = await User.findOne({
-        where: { username: username },
-        attributes: {
-            exclude: ["password", "refresh_token", "access_token", "role_id"]
-        },
-        include: [
-            { model: Role, attributes: ["name", "id"] }
-        ]
-    });
-    if (!user) {
-        return next(new AppError("User not found", 404));
-    }
-    // Find entries
-    const entries = await Entry.findAndCountAll({
-        offset: (page - 1) * limit,
-        limit: limit,
-        order: [
-            ["created_at", "DESC"]
-        ],
-        attributes: { exclude: ["title_id"] },
-        where: { user_id: user.id },
-        include: [
-            {
-                model: Title,
-                attributes: ["name", "id"],
-            }
-        ],
-    });
-    // Return response
-    res.status(200).json({
-        success: true,
-        message: "Entries fetched successfully",
-        data: {
-            page: page,
-            limit: limit,
-            total: entries.count,
-            items: entries.rows,
-        },
-    });
-});
+module.exports = {
+    getUsers,
+    getUserByParam,
+    updateUserByParam,
+}

@@ -1,4 +1,6 @@
 const router = require('express').Router();
+const { getEntryByParams, deleteEntryByParam } = require('../controllers/entryController');
+const { getVoteByParam, createVote, deleteVoteByParams } = require('../controllers/voteController');
 const { Entry, Vote } = require('../db/models');
 
 // Middlewares
@@ -7,13 +9,33 @@ const checkAuthorization = require('../middlewares/checkAuthorization');
 const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 
-// Import controllers
-const entryController = require('../controllers/entryController');
 
 // Set routes
 //* /api/v1/entries/
 // Get an entry by id
-router.get("/:id", checkAuthentication("entry_read", Entry), entryController.getEntryById);
+router.get(
+    "/:id",
+    checkAuthorization("entry_read", Entry),
+    async (req, res, next) => {
+        try {
+            const { id } = req.params
+            // Find entry
+            const entry = await getEntryByParams({ id })
+            // Check if user has voted
+            if (req.user) {
+                const existingVote = await getVoteByParam({ user_id: req.user.id, entry_id: entry.id });
+                entry.userUpvote = existingVote ? existingVote.is_upvote : null;
+            }
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: entry
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
+);
 
 // Update an entry by id
 router.put(
@@ -22,7 +44,19 @@ router.put(
     checkAuthorization("entry_update", Entry),
     checkReqParams(["id"]),
     checkReqBody(["message"]),
-    entryController.updateEntryById
+    async (req, res, next) => {
+        try {
+            // Update entry
+            const entry = await Entry.findByPk(req.params.id);
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: entry
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Delete an entry by id
@@ -31,7 +65,20 @@ router.delete(
     checkAuthentication(),
     checkAuthorization("entry_delete", Entry),
     checkReqParams(["id"]),
-    entryController.deleteEntryById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            // Delete entry
+            await deleteEntryByParam({ id: id })
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: null,
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Vote an entry
@@ -41,7 +88,22 @@ router.post(
     checkAuthorization("vote_create", Vote),
     checkReqParams(["id"]),
     checkReqBody(["is_upvote"]),
-    entryController.voteEntryById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params
+            const { is_upvote } = req.body;
+            // Vote
+            const data = { userId: req.user.id, entryId: id, is_upvote }
+            const vote = await createVote(data)
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: vote
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Unvote an entry
@@ -50,7 +112,20 @@ router.delete(
     checkAuthentication(),
     checkAuthorization("vote_delete", Vote),
     checkReqParams(["id"]),
-    entryController.unvoteEntryById
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            // Delete Vote
+            await deleteVoteByParams({ id })
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: null
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
 );
 
 // Export router
