@@ -40,11 +40,10 @@ app.use('/api/v1', require("./middlewares/configureReq")(), indexRouter);
 // Error handling middleware
 app.use(globalErrorHandler);
 
-const { loadDb } = require('./utils/dbLoad');
 const { getGlobalValues } = require('./utils/getGlobals');
+// const { loadDb } = require('./utils/dbLoad');
 (async () => {
     const { roles, permissions, responses } = await getGlobalValues();
-    // console.log(await getGlobalValues());
     global.roles = roles;
     global.permissions = permissions;
     global.responses = responses;

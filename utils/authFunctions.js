@@ -127,11 +127,7 @@ const checkIsAccessTokenValid = async (access_token, user) => {
     let refresh_decrypted = await decryptToken(user.refresh_token);
     let refresh_decoded = jwt.verify(refresh_decrypted, process.env.REFRESH_TOKEN_SECRET);
     // Check if access token key matches refresh token key
-    if (access_decoded.key === refresh_decoded.key) {
-        return true;
-    } else {
-        return false;
-    }
+    return access_decoded.key === refresh_decoded.key
 };
 
 const createVerificationToken = async (user) => {

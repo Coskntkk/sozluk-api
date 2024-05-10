@@ -30,7 +30,7 @@ const sendErrorProduction = (error, res) => {
     // Errors we cannot detect
     res.status(500).json({
       success: false,
-      message: 'Bir şeyler ters gitti.',
+      message: 'Something went wrong.',
       data: null
     });
   };

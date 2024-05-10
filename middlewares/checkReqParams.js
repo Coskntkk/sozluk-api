@@ -8,9 +8,7 @@ const checkReqParams = (parameters) => {
             // Check if all parameters are provided
             let missingParams = [];
             parameters.map(parameter => {
-                if (!req.params[parameter]) {
-                    missingParams.push(parameter);
-                }
+                if (!req.params[parameter]) missingParams.push(parameter);
             });
             // If any parameter is missing, return error
             if (missingParams.length > 0) {

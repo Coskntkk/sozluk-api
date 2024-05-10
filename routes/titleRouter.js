@@ -24,8 +24,9 @@ router.get(
     checkAuthorization("title_read", Title),
     async (req, res, next) => {
         try {
+            const { limit, page } = req.query;
             // Find all titles
-            let titles = getAllTitles(req.query)
+            let titles = await getAllTitles(req.query)
             // Return response
             res.status(200).json({
                 success: true,

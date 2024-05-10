@@ -1,5 +1,7 @@
 const router = require('express').Router();
+const { where } = require('sequelize');
 const { getEntryByParams, deleteEntryByParam } = require('../controllers/entryController');
+const { acclevel, createAndWhere } = require('../controllers/scopes');
 const { getVoteByParam, createVote, deleteVoteByParams } = require('../controllers/voteController');
 const { Entry, Vote } = require('../db/models');
 
@@ -9,8 +11,6 @@ const checkAuthorization = require('../middlewares/checkAuthorization');
 const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 
-
-// Set routes
 //* /api/v1/entries/
 // Get an entry by id
 router.get(
@@ -46,8 +46,9 @@ router.put(
     checkReqBody(["message"]),
     async (req, res, next) => {
         try {
+            const { id } = req.params
             // Update entry
-            const entry = await Entry.findByPk(req.params.id);
+            const entry = await Entry.findByPk(id);
             // Send response
             res.status(200).json({
                 success: true,

@@ -16,23 +16,15 @@ const checkAuthentication = () => {
             if (token) {
                 // Verify token
                 const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-                if (!decoded) {
-                    next();
-                }
+                if (!decoded) next();
                 // Get user
                 let user = await User.findByPk(decoded.id);
-                if (!user || !user.is_active) {
-                    next();
-                }
+                if (!user || !user.is_active) next();
                 // Check if token is valid
                 let isAccessTokenValid = await checkIsAccessTokenValid(token, user);
-                if (!isAccessTokenValid) {
-                    next();
-                }
+                if (!isAccessTokenValid) next();
                 // Check if token is expired
-                if (decoded.expire < Date.now()) {
-                    next();
-                }
+                if (decoded.expire < Date.now()) next();
                 // Set user to request
                 let role = await Role.findByPk(user.role_id);
                 req.user = { ...user.dataValues, role: role.dataValues };

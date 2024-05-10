@@ -1,23 +1,8 @@
 const { Role, Permission } = require("../db/models");
-
+const scopes = require("./scopes.json")
 const loadPermissions = async () => {
-    let permissions = [
-        'entry_create',
-        'entry_read',
-        'entry_update',
-        'entry_delete',
-        'title_create',
-        'title_read',
-        'title_update',
-        'title_delete',
-        'vote_create',
-        'vote_delete',
-        'user_update',
-        'user_delete',
-        'role_create',
-        'role_update',
-        'role_delete'
-    ];
+    let permissions = Object.keys(scopes)
+    console.log(permissions);
     for (let i = 0; i < permissions.length; i++) {
         const permission = permissions[i];
         const existing = await Permission.findOne({ where: { name: permission } })
@@ -26,7 +11,6 @@ const loadPermissions = async () => {
                 id: i + 1,
                 name: permission
             }
-            console.log(obj);
             // await Permission.create(obj)
         }
     }

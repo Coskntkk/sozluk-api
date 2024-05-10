@@ -5,7 +5,7 @@ const { Title, Entry, User, Vote } = require("../db/models");
 const AppError = require("../utils/appError");
 
 const createEntry = async (titleId, message, user) => {
-    const title = await Title.findByPk(id);
+    const title = await Title.findByPk(titleId);
     if (!title) throw new AppError("Title not found", 404);
     // Create entry
     const entry = await Entry.create({ message, title_id: titleId, user_id: user.id });
