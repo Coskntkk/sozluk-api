@@ -15,7 +15,7 @@ const checkReqParams = require('../middlewares/checkReqParams');
 // Get an entry by id
 router.get(
     "/:id",
-    checkAuthorization("entry_read", Entry),
+    checkAuthorization("entry_read"),
     async (req, res, next) => {
         try {
             const { id } = req.params
@@ -41,7 +41,7 @@ router.get(
 router.put(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("entry_update", Entry),
+    checkAuthorization("entry_update"),
     checkReqParams(["id"]),
     checkReqBody(["message"]),
     async (req, res, next) => {
@@ -64,7 +64,7 @@ router.put(
 router.delete(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("entry_delete", Entry),
+    checkAuthorization("entry_delete"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {
@@ -86,7 +86,7 @@ router.delete(
 router.post(
     "/:id/votes",
     checkAuthentication(),
-    checkAuthorization("vote_create", Vote),
+    checkAuthorization("vote_create"),
     checkReqParams(["id"]),
     checkReqBody(["is_upvote"]),
     async (req, res, next) => {
@@ -111,7 +111,7 @@ router.post(
 router.delete(
     "/:id/votes",
     checkAuthentication(),
-    checkAuthorization("vote_delete", Vote),
+    checkAuthorization("vote_delete"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {

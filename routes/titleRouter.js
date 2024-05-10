@@ -21,7 +21,7 @@ const AppError = require('../utils/appError');
 router.get(
     "/",
     checkPagination(),
-    checkAuthorization("title_read", Title),
+    checkAuthorization("title_read"),
     async (req, res, next) => {
         try {
             const { limit, page } = req.query;
@@ -47,7 +47,7 @@ router.get(
 router.post(
     "/",
     checkAuthentication(),
-    checkAuthorization("title_create", Title),
+    checkAuthorization("title_create"),
     checkReqBody(["name", "message"]),
     async (req, res, next) => {
         try {
@@ -75,7 +75,7 @@ router.get(
     "/:id",
     checkUser(),
     checkPagination(),
-    checkAuthorization("title_read", Title),
+    checkAuthorization("title_read"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {
@@ -113,7 +113,7 @@ router.get(
 router.post(
     "/:id/entries",
     checkAuthentication(),
-    checkAuthorization("entry_create", Title),
+    checkAuthorization("entry_create"),
     checkReqParams(["id"]),
     checkReqBody(["message"]),
     async (req, res, next) => {

@@ -15,7 +15,7 @@ const { getUsers, getUserByParam, updateUserByParam } = require('../controllers/
 router.get(
     "/",
     checkPagination(),
-    checkAuthorization("user_read", User),
+    checkAuthorization("user_read"),
     async (req, res) => {
         try {
             const users = await getUsers(req.query)
@@ -39,7 +39,7 @@ router.get(
 router.get(
     "/:username",
     checkReqParams(["username"]),
-    checkAuthorization("user_read", User),
+    checkAuthorization("user_read"),
     async (req, res, next) => {
         try {
             const { username } = req.params;
@@ -60,7 +60,7 @@ router.get(
 router.put(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("user_update", User),
+    checkAuthorization("user_update"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {
@@ -98,7 +98,7 @@ const getEntriesByParams = async (data, params) => {
 // Get entries by user username
 router.get(
     "/:id/entries",
-    checkAuthorization("entry_read", Entry),
+    checkAuthorization("entry_read"),
     checkReqParams(["id"]),
     checkPagination(),
     async (req, res, next) => {

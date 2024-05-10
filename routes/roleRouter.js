@@ -14,7 +14,7 @@ const checkReqParams = require('../middlewares/checkReqParams');
 router.get(
     "/",
     checkAuthentication(),
-    checkAuthorization("role_read", Role),
+    checkAuthorization("role_read"),
     async (req, res, next) => {
         try {
             // Create role
@@ -34,7 +34,7 @@ router.get(
 router.post(
     "/",
     checkAuthentication(),
-    checkAuthorization("role_create", Role),
+    checkAuthorization("role_create"),
     checkReqBody(["name"]),
     async (req, res, next) => {
         try {
@@ -55,7 +55,7 @@ router.post(
 router.get(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("role_read", Role),
+    checkAuthorization("role_read"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {
@@ -77,7 +77,7 @@ router.get(
 router.put(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("role_update", Role),
+    checkAuthorization("role_update"),
     checkReqParams(["id"]),
     checkReqBody(["name"]),
     async (req, res, next) => {
@@ -101,7 +101,7 @@ router.put(
 router.delete(
     "/:id",
     checkAuthentication(),
-    checkAuthorization("role_delete", Role),
+    checkAuthorization("role_delete"),
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {

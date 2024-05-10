@@ -1,6 +1,8 @@
 const { Op } = require('sequelize')
 
-const acclevel = (user) => {
+const acclevel = (req) => {
+    const { user, own } = req
+    // Own admin meselesi
     const opt = []
     const { id } = user
     if (!id) return opt
