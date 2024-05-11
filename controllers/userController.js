@@ -1,7 +1,6 @@
 // Db
 const { User, Role } = require("../db/models");
 const AppError = require("../utils/appError");
-// Utils
 
 const getUsers = async (data) => {
     const { limit, page } = data
@@ -15,9 +14,9 @@ const getUsers = async (data) => {
     return users
 }
 
-const getUserByParam = async (param) => {
+const getUserByParams = async (where) => {
     return await User.findOne({
-        where: { ...param },
+        where: where,
         attributes: { exclude: ["password", "refresh_token", "access_token", "role_id"] },
         include: [{ model: Role, attributes: ["name", "id"] }]
     })
@@ -33,9 +32,20 @@ const updateUserByParam = async (param, data) => {
     return user.toJSON()
 }
 
+const createUser = async (data) => {
+    const { username, password, email } = data;
+    return await User.create({
+        username,
+        password,
+        email,
+        roleId: 1,
+        is_active: false,
+    });
+}
 
 module.exports = {
     getUsers,
-    getUserByParam,
+    getUserByParams,
+    createUser,
     updateUserByParam,
 }

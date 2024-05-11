@@ -26,7 +26,7 @@ const checkAuthentication = () => {
                 // Check if token is expired
                 if (decoded.expire < Date.now()) next();
                 // Set user to request
-                let role = await Role.findByPk(user.role_id);
+                let role = global.roles(user.role_id);
                 req.user = { ...user.dataValues, role: role.dataValues };
             }
             // Continue

@@ -1,26 +1,15 @@
 // Db
 const sequelize = require("sequelize");
-const { Title, Entry, User, Vote } = require("../db/models");
+const { Title, Entry, User } = require("../db/models");
 // Utils
 const AppError = require("../utils/appError");
 
-const createEntry = async (titleId, message, user) => {
+const createEntry = async (data) => {
+    const { titleId, message, user } = data;
     const title = await Title.findByPk(titleId);
     if (!title) throw new AppError("Title not found", 404);
     // Create entry
-    const entry = await Entry.create({ message, title_id: titleId, user_id: user.id });
-    // Return response
-    let response = await Entry.findOne({
-        where: { id: entry.id },
-        attributes: { exclude: ["user_id"] },
-        include: [
-            {
-                model: User,
-                attributes: ["username", "id", "created_at"],
-            }
-        ],
-    });
-    return response.toJSON()
+    return await Entry.create({ message, title_id: titleId, user_id: user.id });
 }
 
 const getEntriesByTitleId = async (titleId) => {
@@ -89,9 +78,9 @@ const getEntryByParams = async (params) => {
     })
 }
 
-const updateEntryByParam = async (param, data) => {
-    const entry = await Entry.findOne({ where: { ...param } })
-    if (!entry) throw new AppError('Entry not found.', 400)
+const updateEntryByParam = async (where, data) => {
+    let entry = await Entry.findOne({ where: where })
+    if (!entry) throw new AppError("Entry not found.", 404);
     Object.keys(data).forEach((key) => {
         entry[key] = data[key]
     })
@@ -99,9 +88,9 @@ const updateEntryByParam = async (param, data) => {
     return entry.toJSON()
 }
 
-const deleteEntryByParam = async (params) => {
+const deleteEntryByParam = async (where) => {
     // Find Entry
-    const entry = await Entry.findOne({ where: { ...params } });
+    const entry = await Entry.findOne({ where: where });
     if (!entry) throw new AppError("Entry not found", 404);
     // Delete Entry
     await entry.destroy();

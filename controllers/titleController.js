@@ -57,20 +57,20 @@ const getLatestTitle = async () => {
 }
 
 // Create a title
-const createTitle = async (name) => {
+const createTitle = async (data) => {
+    const { name } = data;
     // Check if title already exists
     const titleExists = await Title.findOne({ where: { name } });
     if (titleExists) throw new AppError("Title already exists", 400);
     // Create title
     let title = await Title.create({ name });
-    title = title.toJSON();
-    return title
+    return title.toJSON();
 };
 
 // Get a title by slug or id
-const getTitleByParams = async (params) => {
+const getTitleByParams = async (where) => {
     return await Title.findOne({
-        where: { ...params },
+        where: where,
         order: [
             ["updated_at", "DESC"]
         ],

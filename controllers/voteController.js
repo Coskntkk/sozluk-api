@@ -19,9 +19,9 @@ const createVote = async (data) => {
     return vote
 }
 
-const deleteVoteByParams = async (params) => {
+const deleteVoteByParams = async (where) => {
     // Find vote
-    const vote = await Vote.findOne({ where: { ...params } });
+    const vote = await Vote.findOne({ where: where });
     if (!vote) throw new AppError("Vote not found", 400);
     // Delete vote
     await vote.destroy();

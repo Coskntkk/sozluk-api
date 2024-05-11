@@ -1,9 +1,7 @@
 const router = require('express').Router();
-const { where } = require('sequelize');
-const { getEntryByParams, deleteEntryByParam } = require('../controllers/entryController');
-const { acclevel, createAndWhere } = require('../controllers/scopes');
+const { getEntryByParams, deleteEntryByParam, updateEntryByParam } = require('../controllers/entryController');
+const { acclevelOwner, createAndWhere } = require('../utils/scopes');
 const { getVoteByParam, createVote, deleteVoteByParams } = require('../controllers/voteController');
-const { Entry, Vote } = require('../db/models');
 
 // Middlewares
 const checkAuthentication = require('../middlewares/checkAuthentication');
@@ -15,7 +13,6 @@ const checkReqParams = require('../middlewares/checkReqParams');
 // Get an entry by id
 router.get(
     "/:id",
-    checkAuthorization("entry_read"),
     async (req, res, next) => {
         try {
             const { id } = req.params
@@ -46,9 +43,13 @@ router.put(
     checkReqBody(["message"]),
     async (req, res, next) => {
         try {
-            const { id } = req.params
+            const { id } = req.params;
+            const { message } = req.body
             // Update entry
-            const entry = await Entry.findByPk(id);
+            let opt = acclevelOwner(req.own, req.user)
+            opt.push({ id: id })
+            let where = createAndWhere(opt)
+            let entry = await updateEntryByParam(where, { message })
             // Send response
             res.status(200).json({
                 success: true,
@@ -70,7 +71,10 @@ router.delete(
         try {
             const { id } = req.params;
             // Delete entry
-            await deleteEntryByParam({ id: id })
+            let opt = acclevelOwner(req.own, req.user)
+            opt.push({ id: id })
+            let where = createAndWhere(opt)
+            await deleteEntryByParam(where)
             // Send response
             res.status(200).json({
                 success: true,
@@ -117,7 +121,10 @@ router.delete(
         try {
             const { id } = req.params;
             // Delete Vote
-            await deleteVoteByParams({ id })
+            let opt = acclevelOwner(req.own, req.user)
+            opt.push({ id: id })
+            let where = createAndWhere(opt)
+            await deleteVoteByParams(where)
             // Send response
             res.status(200).json({
                 success: true,

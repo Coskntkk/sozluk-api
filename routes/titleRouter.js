@@ -1,8 +1,6 @@
 const router = require('express').Router();
-const { Title } = require('../db/models');
 
 const slugify = require('slugify');
-const sequelize = require("sequelize");
 
 // Middlewares
 const checkAuthentication = require('../middlewares/checkAuthentication');
@@ -14,6 +12,7 @@ const checkUser = require('../middlewares/checkUser');
 const { getTitleByParams, getAllTitles, createTitle } = require('../controllers/titleController');
 const { getEntriesByTitleId, createEntry } = require('../controllers/entryController');
 const AppError = require('../utils/appError');
+const { createOrWhere } = require('../utils/scopes');
 
 // Set routes
 //* /api/v1/titles/
@@ -55,7 +54,7 @@ router.post(
             name = name.trim().toLowerCase().substring(0, 70);
             message = message.trim().toLowerCase().substring(0, 280);
             // Create title
-            let title = createTitle(name)
+            let title = await createTitle(name)
             // Create entry
             let entry = await createEntry(title.id, message, req.user)
             title.entries = [entry]
@@ -82,13 +81,14 @@ router.get(
             const { id } = req.params;
             const { page, limit } = req.query;
             // Find title
-            let title = await getTitleByParams({
-                [sequelize.Op.or]: [
-                    { id: id },
-                    { slug: id },
-                    { slug: slugify(id) }
-                ]
-            })
+            let opt = []
+            if (isNaN(id)) {
+                opt.push({ slug: id })
+                opt.push({ slug: slugify(id) })
+            }
+            else opt.push({ id: id })
+            let where = createOrWhere(opt)
+            let title = await getTitleByParams(where)
             if (!title) throw new AppError('Title not found.', 400)
             let entries = await getEntriesByTitleId(title.id)
             // Return response
@@ -122,7 +122,8 @@ router.post(
             let { message } = req.body;
             message = message.trim().toLowerCase().substring(0, 280);
             // Create entry
-            const entry = await createEntry(id, message, req.user)
+            let data = { titleId: id, message, user: req.user }
+            const entry = await createEntry(data)
             res.status(201).json({
                 success: true,
                 data: entry

@@ -35,7 +35,7 @@ const globalErrorHandler = require('./utils/globalErrorHandler');
 
 // Routes
 const indexRouter = require('./routes/index');
-app.use('/api/v1', require("./middlewares/configureReq")(), indexRouter);
+app.use('/api/v1', /*require("./middlewares/configureReq")(),*/ indexRouter);
 
 // Error handling middleware
 app.use(globalErrorHandler);

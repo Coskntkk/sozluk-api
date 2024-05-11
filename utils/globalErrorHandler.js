@@ -54,6 +54,15 @@ const globalErrorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || 'error';
 
+  //! Wrong JWT error
+  if (error.name === 'JsonWebTokenError') {
+    error.message = `Json web Token is invalid, try again`
+  }
+
+  //! JWT EXPIRE error
+  if (error.name === 'TokenExpiredError') {
+    error.message = `Json web Token is expired, try again`
+  }
   // Logging errors to database
   error.statusCode >= 500 && logErrorToDatabase(error);
 
