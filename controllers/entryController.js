@@ -43,6 +43,23 @@ const getEntriesByTitleId = async (titleId) => {
     })
 }
 
+const getEntriesByParams = async (data, params) => {
+    const { limit, page } = data
+    const entries = await Entry.findAndCountAll({
+        offset: (page - 1) * limit,
+        // limit: limit,
+        order: [["created_at", "DESC"]],
+        where: { ...params },
+        include: [
+            {
+                model: Title,
+                attributes: ["name", "id", "slug"],
+            },
+        ]
+    });
+    return entries
+}
+
 const getEntryByParams = async (params) => {
     return await Entry.findAndCountAll({
         where: { ...params },
@@ -100,6 +117,7 @@ module.exports = {
     createEntry,
     getEntriesByTitleId,
     getEntryByParams,
+    getEntriesByParams,
     updateEntryByParam,
     deleteEntryByParam,
 }

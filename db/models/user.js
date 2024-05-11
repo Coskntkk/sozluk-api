@@ -32,7 +32,15 @@ const User = postgres.define(
             type: Sequelize.BOOLEAN,
             allowNull: false,
             defaultValue: false,
-        }
+        },
+        email_verify_token: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
+        password_verify_token: {
+            type: Sequelize.STRING,
+            allowNull: true,
+        },
     },
     {
         timestamps: true,

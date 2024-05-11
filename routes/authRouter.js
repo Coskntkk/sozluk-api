@@ -13,9 +13,9 @@ const {
     createVerificationToken,
     verifyVerificationToken
 } = require("../utils/authFunctions");
-const { createUser, getUserByParams, updateUserByParam } = require('../controllers/userController');
+const { createUser, getUserByParams, updateUserByParam, getUserByParamsAuth } = require('../controllers/userController');
 // Import controllers
-const { createOrWhere } = require('../utils/scopes');
+const { createOrWhere } = require('../controllers/scopes');
 
 // Set routes
 //* /api/v1/auth/
@@ -32,11 +32,17 @@ router.post(
             const userExists = await getUserByParams(where);
             if (userExists) throw new AppError("Username or email already exists", 400);
             // Create user
-            const user = await createUser(req.body)
+            let user = await createUser({
+                username,
+                password,
+                email,
+            })
             // Create verification token and send email
-            const token = await createVerificationToken(user);
+            const { verification_token, key } = await createVerificationToken(user);
             const apiurl = process.env.NODE_ENV === "production" ? process.env.API_URL : process.env.API_URL_DEV;
-            await registerEmail({ email, url: `${apiurl}/api/v1/auth/verify/${token}` });
+            await registerEmail({ email, url: `${apiurl}/api/v1/auth/verify/${verification_token}` });
+            user.email_verify_token = key
+            await user.save()
             // Send response
             res.status(200).json({ success: true });
         } catch (error) {
@@ -54,12 +60,13 @@ router.get(
             if (!token) throw new AppError("No token", 400);
             // Verify token
             const decoded_token = await verifyVerificationToken(token);
+            const { id, key } = decoded_token
             // Check if user exists
-            let user = await getUserByParams({ id: decoded_token.id });
-            if (!user) throw new AppError("Invalid token", 400);
+            let user = await getUserByParams({ id });
+            if (!user || user.email_verify_token !== key) throw new AppError("Invalid token", 400);
             // Update user
             user.is_active = true;
-            user.email_token = null;
+            user.email_verify_token = null;
             await user.save();
             // Send response
             res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);
@@ -77,8 +84,8 @@ router.post(
         try {
             const { username, password } = req.body;
             // Find user
-            let user = await getUserByParams({ username });
-            if (!user || !user.is_active) throw new AppError("Username is incorrect", 400);
+            let user = await getUserByParamsAuth({ username });
+            if (!user || !user.is_active) throw new AppError("Invalid user.", 400);
             // Check user password
             let passwordCorrect = await isPasswordCorrect(user, password);
             if (!passwordCorrect) throw new AppError("Password is incorrect", 400);
@@ -87,10 +94,7 @@ router.post(
             res.header("x-access-token", access_token);
             res.header("x-refresh-token", refresh_token);
             // Send response
-            res.status(200).json({
-                success: true,
-                data: result,
-            });
+            res.status(200).json({ success: true });
         } catch (error) {
             next(error)
         }
@@ -112,26 +116,6 @@ router.post(
                 success: true,
                 data: access_token,
             });
-        } catch (error) {
-            next(error)
-        }
-    }
-);
-
-// Check if the user is logged in
-router.get(
-    "/checkLogin",
-    checkAuthentication(),
-    async (req, res, next) => {
-        try {
-            // This route is only accessible if the user is logged in so there is no need to do any checks
-            let user = await getUserByParams({ id: req.user.id });
-            let refresh_token = await decryptToken(user.refresh_token);
-            let access_token = await generateAccessToken(refresh_token)
-            // Send response
-            res.header("x-access-token", access_token);
-            res.header("x-refresh-token", refresh_token);
-            res.status(200).json({ success: true });
         } catch (error) {
             next(error)
         }
@@ -170,9 +154,11 @@ router.post(
             let user = await getUserByParams({ email });
             if (!user) throw new AppError("Email not found", 400);
             // Create verification token and send email
-            const token = await createVerificationToken(user);
+            const { verification_token, key } = await createVerificationToken(user);
             const clientUrl = process.env.NODE_ENV === "production" ? process.env.CLIENT_URL : process.env.CLIENT_URL_DEV;
-            await changePassword({ email, url: `${clientUrl}/reset-password/${token}` });
+            await changePassword({ email, url: `${clientUrl}/reset-password/${verification_token}` });
+            user.password_verify_token = key
+            await user.save()
             // Send response
             res.status(200).json({
                 success: true,

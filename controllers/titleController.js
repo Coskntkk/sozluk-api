@@ -57,8 +57,7 @@ const getLatestTitle = async () => {
 }
 
 // Create a title
-const createTitle = async (data) => {
-    const { name } = data;
+const createTitle = async (name) => {
     // Check if title already exists
     const titleExists = await Title.findOne({ where: { name } });
     if (titleExists) throw new AppError("Title already exists", 400);

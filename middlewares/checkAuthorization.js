@@ -14,7 +14,7 @@ const checkAuthorization = (action) => {
       // Check if the client's role is in the given list of roles
       let role;
       if (!req.user) role = "guest";
-      else role = req.user.role.name;
+      else role = global.roles[req.user.role].name
       // Find access
       const access = scope[role];
       // Check access

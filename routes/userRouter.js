@@ -8,6 +8,7 @@ const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 const checkPagination = require('../middlewares/checkPagination');
 const { getUsers, getUserByParam, updateUserByParam } = require('../controllers/userController');
+const { getEntriesByParams } = require('../controllers/entryController');
 
 // Set routes
 //* /api/v1/users/
@@ -78,22 +79,6 @@ router.put(
     }
 );
 
-const getEntriesByParams = async (data, params) => {
-    const { limit, page } = data
-    const entries = await Entry.findAndCountAll({
-        offset: (page - 1) * limit,
-        // limit: limit,
-        order: [["created_at", "DESC"]],
-        where: { ...params },
-        include: [
-            {
-                model: Title,
-                attributes: ["name", "id", "slug"],
-            },
-        ]
-    });
-    return entries
-}
 
 // Get entries by user username
 router.get(

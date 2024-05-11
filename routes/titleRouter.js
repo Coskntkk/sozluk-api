@@ -12,7 +12,7 @@ const checkUser = require('../middlewares/checkUser');
 const { getTitleByParams, getAllTitles, createTitle } = require('../controllers/titleController');
 const { getEntriesByTitleId, createEntry } = require('../controllers/entryController');
 const AppError = require('../utils/appError');
-const { createOrWhere } = require('../utils/scopes');
+const { createOrWhere } = require('../controllers/scopes');
 
 // Set routes
 //* /api/v1/titles/
@@ -56,7 +56,7 @@ router.post(
             // Create title
             let title = await createTitle(name)
             // Create entry
-            let entry = await createEntry(title.id, message, req.user)
+            let entry = await createEntry({ titleId: title.id, message, user: req.user })
             title.entries = [entry]
             // Return response
             res.status(201).json({

@@ -22,6 +22,13 @@ const getUserByParams = async (where) => {
     })
 }
 
+const getUserByParamsAuth = async (where) => {
+    return await User.findOne({
+        where: where,
+        include: [{ model: Role, attributes: ["name", "id"] }]
+    })
+}
+
 const updateUserByParam = async (param, data) => {
     const user = await User.findOne({ where: { ...param } })
     if (!user) throw new AppError('User not found.', 400)
@@ -33,19 +40,15 @@ const updateUserByParam = async (param, data) => {
 }
 
 const createUser = async (data) => {
-    const { username, password, email } = data;
-    return await User.create({
-        username,
-        password,
-        email,
-        roleId: 1,
-        is_active: false,
-    });
+    if (!data.roleId) data.roleId = 1
+    if (!data.is_active) data.is_active = false
+    return await User.create({ ...data });
 }
 
 module.exports = {
     getUsers,
     getUserByParams,
+    getUserByParamsAuth,
     createUser,
     updateUserByParam,
 }

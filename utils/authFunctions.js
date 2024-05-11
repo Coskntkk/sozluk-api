@@ -76,9 +76,6 @@ const generateInitialTokens = async (user) => {
     // Set refresh token payload
     const refresh_token_payload = {
         id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role_id,
         key: generateRandomString(10),
     };
     // Create refresh token
@@ -89,17 +86,22 @@ const generateInitialTokens = async (user) => {
     const refresh_token_encrypted = await encryptToken(refresh_token);
     // Save refresh token to database
     user.refresh_token = refresh_token_encrypted;
+    await user.save();
     // Set access token payload
     const access_token_payload = {
-        id: user.id,
+        user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role_id,
+            is_active: user.is_active
+        },
         key: refresh_token_payload.key,
     };
     // Create access token
     const access_token = await jwt.sign(access_token_payload, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1d",
     });
-    // Save user
-    await user.save();
     // Return tokens
     return { refresh_token, access_token };
 };
@@ -107,7 +109,9 @@ const generateInitialTokens = async (user) => {
 // Generate access token from refresh token
 const generateAccessToken = async (refresh_token) => {
     // Get user's refresh token
-    const refresh_token_decoded = await jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);
+    const refresh_token_decoded = await jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET);;
+    // Save refresh token to database
+
     // Generate new access token
     const payload = {
         id: refresh_token_decoded.id,
@@ -134,14 +138,14 @@ const createVerificationToken = async (user) => {
     // Set payload
     const payload = {
         id: user.id,
-        email: user.email,
+        key: generateRandomString(10),
     };
     // Create verification token
     const verification_token = await jwt.sign(payload, process.env.VERIFICATION_TOKEN_SECRET, {
         expiresIn: "7d",
     });
     // Return verification token
-    return verification_token;
+    return { verification_token, key };
 };
 
 const verifyVerificationToken = async (token) => {

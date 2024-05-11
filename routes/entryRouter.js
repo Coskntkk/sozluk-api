@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { getEntryByParams, deleteEntryByParam, updateEntryByParam } = require('../controllers/entryController');
-const { acclevelOwner, createAndWhere } = require('../utils/scopes');
+const { acclevelOwner, createAndWhere } = require('../controllers/scopes');
 const { getVoteByParam, createVote, deleteVoteByParams } = require('../controllers/voteController');
 
 // Middlewares
