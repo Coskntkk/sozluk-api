@@ -61,6 +61,7 @@ router.post(
             // Return response
             res.status(201).json({
                 success: true,
+                message: "Title created.",
                 data: title
             });
         } catch (error) {
@@ -126,6 +127,7 @@ router.post(
             const entry = await createEntry(data)
             res.status(201).json({
                 success: true,
+                message: "Entry created.",
                 data: entry
             });
         } catch (error) {

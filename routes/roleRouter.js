@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const { getRoles, createRole, getRoleByParams, deleteRoleByParams, updateRoleByParams } = require('../controllers/roleController');
-const { Role } = require('../db/models');
 
 // Middlewares
 const checkAuthentication = require('../middlewares/checkAuthentication');
@@ -43,6 +42,7 @@ router.post(
             // Send response
             res.status(200).json({
                 success: true,
+                message: "Role created.",
                 data: role,
             });
         } catch (error) {
@@ -88,7 +88,7 @@ router.put(
             // Send response
             res.status(200).json({
                 success: true,
-                message: "Role updated successfully",
+                message: "Role updated.",
                 data: role,
             });
         } catch (error) {
@@ -105,10 +105,14 @@ router.delete(
     checkReqParams(["id"]),
     async (req, res, next) => {
         try {
+            const { id } = req.params
+            // Delete role
             await deleteRoleByParams({ id: id })
             // Send response
             res.status(200).json({
-                success: true
+                success: true,
+                message: "Role deleted.",
+                data: id
             });
         } catch (error) {
             next(error)

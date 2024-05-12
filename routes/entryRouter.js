@@ -53,6 +53,7 @@ router.put(
             // Send response
             res.status(200).json({
                 success: true,
+                message: "Entry updated.",
                 data: entry
             });
         } catch (error) {
@@ -78,7 +79,8 @@ router.delete(
             // Send response
             res.status(200).json({
                 success: true,
-                data: null,
+                message: "Entry deleted.",
+                data: {},
             });
         } catch (error) {
             next(error)
@@ -103,6 +105,7 @@ router.post(
             // Send response
             res.status(200).json({
                 success: true,
+                message: "Entry voted.",
                 data: vote
             });
         } catch (error) {
@@ -128,7 +131,8 @@ router.delete(
             // Send response
             res.status(200).json({
                 success: true,
-                data: null
+                message: "Entry unvoted.",
+                data: {}
             });
         } catch (error) {
             next(error)

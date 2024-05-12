@@ -17,16 +17,22 @@ const getUsers = async (data) => {
 const getUserByParams = async (where) => {
     return await User.findOne({
         where: where,
-        attributes: { exclude: ["password", "refresh_token", "access_token", "role_id"] },
-        include: [{ model: Role, attributes: ["name", "id"] }]
+        attributes: {
+            exclude: [
+                "password",
+                "refresh_token",
+                "access_token",
+                "role_id",
+                "email_verify_token",
+                "password_verify_token",
+                "deletedAt"
+            ]
+        },
     })
 }
 
 const getUserByParamsAuth = async (where) => {
-    return await User.findOne({
-        where: where,
-        include: [{ model: Role, attributes: ["name", "id"] }]
-    })
+    return await User.findOne({ where: where })
 }
 
 const updateUserByParam = async (param, data) => {

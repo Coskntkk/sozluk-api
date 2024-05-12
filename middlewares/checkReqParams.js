@@ -15,7 +15,7 @@ const checkReqParams = (parameters) => {
                 res.status(400).json({
                     success: false,
                     message: `Please provide ${missingParams.join(", ")}`,
-                    data: null,
+                    data: {},
                 });
                 next(new AppError(`Please provide ${missingParams.join(", ")}`, 400));
             }
@@ -23,7 +23,7 @@ const checkReqParams = (parameters) => {
             next();
         } catch (error) {
             console.log(error);
-            res.status(400).send({ success: false, message: error.message, data: null });
+            res.status(400).send({ success: false, message: error.message, data: {} });
         }
     };
 }

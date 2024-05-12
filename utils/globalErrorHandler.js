@@ -8,7 +8,7 @@ const sendErrorDevelopment = (error, res) => {
   return res.status(error.statusCode).json({
     success: false,
     message: error.message,
-    data: null,
+    data: {},
     dev: error.statusCode >= 500 ? {
       status: error.status,
       error: error,
@@ -24,14 +24,14 @@ const sendErrorProduction = (error, res) => {
     res.status(error.statusCode).json({
       success: false,
       message: error.message,
-      data: null,
+      data: {},
     });
   } else {
     // Errors we cannot detect
     res.status(500).json({
       success: false,
       message: 'Something went wrong.',
-      data: null
+      data: {}
     });
   };
 };

@@ -32,7 +32,7 @@ const checkAuthorization = (action) => {
       next();
     } catch (error) {
       console.log(error);
-      res.status(400).send({ success: false, message: error.message, data: null });
+      res.status(400).send({ success: false, message: error.message, data: {} });
     }
   };
 };

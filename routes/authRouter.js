@@ -44,7 +44,10 @@ router.post(
             user.email_verify_token = key
             await user.save()
             // Send response
-            res.status(200).json({ success: true });
+            res.status(200).json({
+                success: true,
+                message: "Successfully registered. Please check your mailbox to activate your account."
+            });
         } catch (error) {
             next(error)
         }
@@ -94,7 +97,10 @@ router.post(
             res.header("x-access-token", access_token);
             res.header("x-refresh-token", refresh_token);
             // Send response
-            res.status(200).json({ success: true });
+            res.status(200).json({
+                success: true,
+                message: "Login successful."
+            });
         } catch (error) {
             next(error)
         }
@@ -135,7 +141,7 @@ router.get(
             // Send response
             res.status(200).json({
                 success: true,
-                data: null,
+                data: {},
             });
         } catch (error) {
             next(error)
@@ -162,7 +168,8 @@ router.post(
             // Send response
             res.status(200).json({
                 success: true,
-                data: null,
+                message: "Password reset mail sent. Please check your mailbox..",
+                data: {},
             });
         } catch (error) {
             next(error)

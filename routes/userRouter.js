@@ -1,14 +1,15 @@
 const router = require('express').Router();
-const { User, Entry, Title } = require('../db/models');
 
 // Middlewares
 const checkAuthentication = require('../middlewares/checkAuthentication');
 const checkAuthorization = require('../middlewares/checkAuthorization');
-const checkReqBody = require('../middlewares/checkReqBody');
 const checkReqParams = require('../middlewares/checkReqParams');
 const checkPagination = require('../middlewares/checkPagination');
-const { getUsers, getUserByParam, updateUserByParam } = require('../controllers/userController');
+
+// Controllers
+const { getUsers, updateUserByParam, getUserByParams } = require('../controllers/userController');
 const { getEntriesByParams } = require('../controllers/entryController');
+const { createOrWhere } = require('../controllers/scopes');
 
 // Set routes
 //* /api/v1/users/
@@ -36,16 +37,21 @@ router.get(
     }
 );
 
-// Get user by username
+// Get user by username or id
 router.get(
-    "/:username",
-    checkReqParams(["username"]),
+    "/:id",
+    checkReqParams(["id"]),
     checkAuthorization("user_read"),
     async (req, res, next) => {
         try {
-            const { username } = req.params;
+            const { id } = req.params;
+            // Find title
+            let opt = []
+            if (isNaN(id)) opt.push({ username: id })
+            else opt.push({ id: id })
+            let where = createOrWhere(opt)
             // Find user
-            const user = await getUserByParam({ username: username })
+            const user = await getUserByParams(where)
             // Return response
             res.status(200).json({
                 success: true,
@@ -71,6 +77,7 @@ router.put(
             // Return response
             res.status(200).json({
                 success: true,
+                message: "User updated.",
                 data: user,
             });
         } catch (error) {
