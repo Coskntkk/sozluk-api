@@ -1,17 +1,18 @@
 const Sequelize = require("sequelize");
 const postgres = require("../postgres");
 
-const Entry = postgres.define(
-  "entry",
+const ReportStatus = postgres.define(
+  "report_status",
   {
-    message: {
+    name: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
   },
 );
 
-module.exports = Entry;
+module.exports = ReportStatus;

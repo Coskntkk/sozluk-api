@@ -1,4 +1,3 @@
-
 # SOZLUK-API
 
 REST API for a collaborative dictionary project.
@@ -10,11 +9,9 @@ REST API for a collaborative dictionary project.
 - checkReqBody and checkAuthentication middlewares
 - Preset user model in mongodb and error model in postgresql
 
-
 ## Tech Stack
 
 **Server:** Node, Express
-
 
 ## Environment Variables
 
@@ -58,6 +55,6 @@ Install my-project with npm
 ```bash
   git clone https://github.com/Coskntkk/sozluk-api.git
   cd sozluk-api
-  npm install 
+  npm install
   npm start
 ```

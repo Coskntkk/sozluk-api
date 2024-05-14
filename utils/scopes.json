@@ -1,191 +1,191 @@
 {
-    "entry_create": {
-        "action": "entry_create",
-        "guest": "no",
-        "newbie": "yes",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "entry_read": {
-        "action": "entry_read",
-        "guest": "yes",
-        "newbie": "yes",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "entry_update": {
-        "action": "entry_update",
-        "guest": "no",
-        "newbie": "own",
-        "user": "own",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "entry_delete": {
-        "action": "entry_delete",
-        "guest": "no",
-        "newbie": "own",
-        "user": "own",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "title_create": {
-        "action": "title_create",
-        "guest": "no",
-        "newbie": "no",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "title_read": {
-        "action": "title_read",
-        "guest": "yes",
-        "newbie": "yes",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "title_update": {
-        "action": "title_update",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "title_delete": {
-        "action": "title_delete",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "vote_create": {
-        "action": "vote_create",
-        "guest": "no",
-        "newbie": "yes",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "vote_delete": {
-        "action": "vote_delete",
-        "guest": "no",
-        "newbie": "own",
-        "user": "own",
-        "moderator": "own",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "user_read": {
-        "action": "user_read",
-        "guest": "yes",
-        "newbie": "yes",
-        "user": "yes",
-        "moderator": "yes",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "user_update": {
-        "action": "user_update",
-        "guest": "no",
-        "newbie": "own",
-        "user": "own",
-        "moderator": "own",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "user_delete": {
-        "action": "user_delete",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "yes",
-        "superadmin": "yes"
-    },
-    "admin_create": {
-        "action": "admin_create",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "admin_read": {
-        "action": "admin_read",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "admin_update": {
-        "action": "admin_update",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "admin_delete": {
-        "action": "admin_delete",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "role_read": {
-        "action": "role_read",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "role_create": {
-        "action": "role_create",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "role_update": {
-        "action": "role_update",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    },
-    "role_delete": {
-        "action": "role_delete",
-        "guest": "no",
-        "newbie": "no",
-        "user": "no",
-        "moderator": "no",
-        "admin": "no",
-        "superadmin": "yes"
-    }
+  "entry_create": {
+    "action": "entry_create",
+    "guest": "no",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "entry_read": {
+    "action": "entry_read",
+    "guest": "yes",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "entry_update": {
+    "action": "entry_update",
+    "guest": "no",
+    "newbie": "own",
+    "user": "own",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "entry_delete": {
+    "action": "entry_delete",
+    "guest": "no",
+    "newbie": "own",
+    "user": "own",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "title_create": {
+    "action": "title_create",
+    "guest": "no",
+    "newbie": "no",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "title_read": {
+    "action": "title_read",
+    "guest": "yes",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "title_update": {
+    "action": "title_update",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "title_delete": {
+    "action": "title_delete",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "vote_create": {
+    "action": "vote_create",
+    "guest": "no",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "vote_delete": {
+    "action": "vote_delete",
+    "guest": "no",
+    "newbie": "own",
+    "user": "own",
+    "moderator": "own",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "user_read": {
+    "action": "user_read",
+    "guest": "yes",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "user_update": {
+    "action": "user_update",
+    "guest": "no",
+    "newbie": "own",
+    "user": "own",
+    "moderator": "own",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "user_delete": {
+    "action": "user_delete",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "admin_create": {
+    "action": "admin_create",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "admin_read": {
+    "action": "admin_read",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "admin_update": {
+    "action": "admin_update",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "admin_delete": {
+    "action": "admin_delete",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "role_read": {
+    "action": "role_read",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "role_create": {
+    "action": "role_create",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "role_update": {
+    "action": "role_update",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  },
+  "role_delete": {
+    "action": "role_delete",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "no",
+    "admin": "no",
+    "superadmin": "yes"
+  }
 }
