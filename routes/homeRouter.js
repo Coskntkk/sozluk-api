@@ -4,14 +4,14 @@ const { getLatestTitle } = require("../controllers/titleController");
 
 // Middlewares
 const checkPagination = require("../middlewares/checkPagination");
-const checkUser = require("../middlewares/checkUser");
+const checkAuthentication = require("../middlewares/checkAuthentication");
 
 // Set routes
 //* /api/v1/home/
 // Get latest title
 router.get(
   "/latest",
-  checkUser(),
+  checkAuthentication(),
   checkPagination(),
   async (req, res, next) => {
     try {

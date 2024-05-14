@@ -19,7 +19,7 @@ const createRole = async (params) => {
 };
 
 const updateRoleByParams = async (params, data) => {
-  const role = await Role.update({ where: { ...params } });
+  const role = await Role.findOne({ where: { ...params } });
   Object.keys(data).forEach((key) => {
     role[key] = data[key];
   });

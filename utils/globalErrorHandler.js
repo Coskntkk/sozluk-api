@@ -52,7 +52,8 @@ const logErrorToDatabase = async (error) => {
     .catch((error) => { console.log(error); console.log("Error logging to database") });
 };
 
-const globalErrorHandler = (error, req, res) => {
+// eslint-disable-next-line no-unused-vars
+const globalErrorHandler = (error, req, res, next) => {
   // statusCode means the code of the status of the request and status is the actual status of the request(coming from the Error class)
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";

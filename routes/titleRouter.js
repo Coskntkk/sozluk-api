@@ -8,7 +8,6 @@ const checkAuthorization = require("../middlewares/checkAuthorization");
 const checkReqBody = require("../middlewares/checkReqBody");
 const checkReqParams = require("../middlewares/checkReqParams");
 const checkPagination = require("../middlewares/checkPagination");
-const checkUser = require("../middlewares/checkUser");
 const {
   getTitleByParams,
   getAllTitles,
@@ -84,7 +83,7 @@ router.post(
 // Get title by slug or id
 router.get(
   "/:id",
-  checkUser(),
+  checkAuthentication(),
   checkPagination(),
   checkReqParams(["id"]),
   async (req, res, next) => {

@@ -16,7 +16,7 @@ const createPermission = async (params) => {
 };
 
 const updatePermissionByParams = async (params, data) => {
-  const permission = await Permission.update({ where: { ...params } });
+  const permission = await Permission.findOne({ where: { ...params } });
   Object.keys(data).forEach((key) => {
     permission[key] = data[key];
   });

@@ -1,4 +1,4 @@
-const { Role, Permission, Model } = require("../db/models");
+const { Role, Permission, Model, ReportStatus } = require("../db/models");
 const scopes = require("./scopes.json");
 
 const loadPermissions = async () => {
@@ -50,10 +50,27 @@ const loadModels = async () => {
   console.log("load models done");
 };
 
+const loadReportStatuses = async () => {
+  let statuses = ["Open", "Rejected", "Accepted"];
+  for (let i = 0; i < statuses.length; i++) {
+    const status = statuses[i];
+    const existing = await ReportStatus.findOne({ where: { name: status } });
+    if (!existing) {
+      let obj = {
+        id: i + 1,
+        name: status,
+      };
+      await ReportStatus.create(obj);
+    }
+  }
+  console.log("load models done");
+};
+
 const loadDb = async () => {
   await loadPermissions();
   await loadRoles();
   await loadModels();
+  await loadReportStatuses()
   console.log("load db done");
 };
 
