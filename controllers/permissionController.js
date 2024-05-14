@@ -1,5 +1,5 @@
 // Db
-const { Permission, User } = require("../db/models");
+const { Permission } = require("../db/models");
 const AppError = require("../utils/appError");
 
 const getPermissions = async () => {

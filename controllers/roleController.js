@@ -32,7 +32,7 @@ const deleteRoleByParams = async (params) => {
   const role = await Role.findOne({ where: { ...params } });
   if (!role) throw new AppError("Role not found", 404);
   // Check if there are users with this role
-  const userCount = await User.count({ where: { roleId: id } });
+  const userCount = await User.count({ where: { roleId: params.id } });
   if (userCount && userCount > 0)
     throw new AppError("There are users with this role.");
   // Delete role

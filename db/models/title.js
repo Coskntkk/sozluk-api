@@ -22,7 +22,7 @@ const Title = postgres.define(
 );
 
 // Generate slug from name before creating
-Title.beforeCreate((title, options) => {
+Title.beforeCreate((title, /*options*/) => {
   title.slug = slugify(title.name, { lower: true });
 });
 

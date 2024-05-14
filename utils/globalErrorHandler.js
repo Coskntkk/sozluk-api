@@ -12,10 +12,10 @@ const sendErrorDevelopment = (error, res) => {
     dev:
       error.statusCode >= 500
         ? {
-            status: error.status,
-            error: error,
-            stack: error.stack,
-          }
+          status: error.status,
+          error: error,
+          stack: error.stack,
+        }
         : null,
   });
 };
@@ -49,10 +49,10 @@ const logErrorToDatabase = async (error) => {
   };
   ErrorLog.create(errorObject)
     .then(() => console.log("Error logged to database"))
-    .catch((err) => console.log("Error logging to database"));
+    .catch((error) => { console.log(error); console.log("Error logging to database") });
 };
 
-const globalErrorHandler = (error, req, res, next) => {
+const globalErrorHandler = (error, req, res) => {
   // statusCode means the code of the status of the request and status is the actual status of the request(coming from the Error class)
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";

@@ -1,5 +1,5 @@
 // Db
-const { Title, Entry, User, Vote } = require("../db/models");
+const { Title } = require("../db/models");
 // 3rd party
 const sequelize = require("sequelize");
 // Utils

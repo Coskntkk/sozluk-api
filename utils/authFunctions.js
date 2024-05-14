@@ -50,6 +50,7 @@ const encryptToken = async (token) => {
     // return the session cookie
     return cookie;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };

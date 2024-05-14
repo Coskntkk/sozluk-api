@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "format:check": "prettier --check .",
-    "format:write": "prettier --write ."
+    "format:write": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

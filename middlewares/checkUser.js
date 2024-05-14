@@ -1,9 +1,8 @@
 // Db
-const { User, Role } = require("../db/models");
+const { User } = require("../db/models");
 // 3rd party
 const jwt = require("jsonwebtoken");
 // Utils
-const AppError = require("../utils/appError");
 const { checkIsAccessTokenValid } = require("../utils/authFunctions");
 const catchAsync = require("../utils/catchAsync");
 
