@@ -8,7 +8,7 @@ const checkPagination = require("../middlewares/checkPagination");
 
 // Controllers
 const {
-  getUsers,
+  // getUsers,
   updateUserByParam,
   getUserByParams,
 } = require("../controllers/userController");
@@ -16,30 +16,31 @@ const { getEntriesByParams } = require("../controllers/entryController");
 const { createOrWhere } = require("../controllers/scopes");
 
 // Set routes
-//* /api/v1/users/
-// Get all users
-router.get(
-  "/",
-  checkPagination(),
-  checkAuthorization("user_read"),
-  async (req, res, next) => {
-    try {
-      const users = await getUsers(req.query);
-      // Return response
-      res.status(200).json({
-        success: true,
-        data: {
-          // page: page,
-          // limit: limit,
-          total: users.count,
-          items: users.rows,
-        },
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+
+// //* /api/v1/users/
+// // Get all users
+// router.get(
+//   "/",
+//   checkPagination(),
+//   checkAuthorization("user_read"),
+//   async (req, res, next) => {
+//     try {
+//       const users = await getUsers(req.query);
+//       // Return response
+//       res.status(200).json({
+//         success: true,
+//         data: {
+//           // page: page,
+//           // limit: limit,
+//           total: users.count,
+//           items: users.rows,
+//         },
+//       });
+//     } catch (error) {
+//       next(error);
+//     }
+//   },
+// );
 
 // Get user by username or id
 router.get(

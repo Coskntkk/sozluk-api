@@ -5,8 +5,13 @@ const Entry = postgres.define(
   "entry",
   {
     message: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(280),
       allowNull: false,
+    },
+    point: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      default: 0
     },
   },
   {

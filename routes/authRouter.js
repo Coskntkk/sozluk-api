@@ -98,7 +98,8 @@ router.post(
       const { username, password } = req.body;
       // Find user
       let user = await getUserByParamsAuth({ username });
-      if (!user || !user.is_active) throw new AppError("Invalid user.", 400);
+      if (!user) throw new AppError("User not found.", 400);
+      if (!user.is_active) throw new AppError("User is not active.", 400);
       // Check user password
       let passwordCorrect = await isPasswordCorrect(user, password);
       if (!passwordCorrect) throw new AppError("Password is incorrect", 400);
@@ -110,6 +111,8 @@ router.post(
       res.status(200).json({
         success: true,
         message: "Login successful.",
+        access_token: access_token,
+        refresh_token: refresh_token
       });
     } catch (error) {
       next(error);

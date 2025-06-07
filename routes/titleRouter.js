@@ -26,7 +26,6 @@ const { createOrWhere } = require("../controllers/scopes");
 router.get(
   "/",
   checkPagination(),
-  checkAuthorization("title_read"),
   async (req, res, next) => {
     try {
       const { limit, page } = req.query;
@@ -83,7 +82,6 @@ router.post(
 // Get title by slug or id
 router.get(
   "/:id",
-  checkAuthentication(),
   checkPagination(),
   checkReqParams(["id"]),
   async (req, res, next) => {
@@ -99,7 +97,7 @@ router.get(
       let where = createOrWhere(opt);
       let title = await getTitleByParams(where);
       if (!title) throw new AppError("Title not found.", 400);
-      let entries = await getEntriesByTitleId(title.id);
+      let entries = await getEntriesByTitleId(title.id, req.query);
       // Return response
       res.status(200).send({
         success: true,

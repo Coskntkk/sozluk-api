@@ -2,21 +2,15 @@ const router = require("express").Router();
 const { getEntriesByTitleId } = require("../controllers/entryController");
 const { getLatestTitle } = require("../controllers/titleController");
 
-// Middlewares
-const checkPagination = require("../middlewares/checkPagination");
-const checkAuthentication = require("../middlewares/checkAuthentication");
-
 // Set routes
 //* /api/v1/home/
 // Get latest title
 router.get(
   "/latest",
-  checkAuthentication(),
-  checkPagination(),
   async (req, res, next) => {
     try {
       let title = await getLatestTitle();
-      let entries = await getEntriesByTitleId(title.id);
+      let entries = await getEntriesByTitleId(title.id, { page: 1, limit: 10 });
       // Return response
       res.status(200).json({
         success: true,

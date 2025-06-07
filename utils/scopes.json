@@ -187,5 +187,23 @@
     "moderator": "no",
     "admin": "no",
     "superadmin": "yes"
+  },
+  "report_create": {
+    "action": "report_create",
+    "guest": "no",
+    "newbie": "yes",
+    "user": "yes",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
+  },
+  "report_update": {
+    "action": "report_update",
+    "guest": "no",
+    "newbie": "no",
+    "user": "no",
+    "moderator": "yes",
+    "admin": "yes",
+    "superadmin": "yes"
   }
 }

@@ -12,25 +12,22 @@ const createEntry = async (data) => {
   return await Entry.create({ message, title_id: titleId, user_id: user.id });
 };
 
-const getEntriesByTitleId = async (titleId) => {
+const getEntriesByTitleId = async (titleId, query) => {
+  const { page, limit } = query;
   return await Entry.findAndCountAll({
     where: { title_id: titleId },
-    limit: 10,
-    offset: 0,
+    limit: limit,
+    offset: limit * (page - 1),
     attributes: {
       exclude: ["user_id", "title_id"],
       include: [
         [
           sequelize.literal(`(
-                        SELECT COUNT(*)
-                        FROM vote
-                        WHERE vote.entry_id = entry.id AND vote.is_upvote = true
-                    ) - (
-                        SELECT COUNT(*)
-                        FROM vote
-                        WHERE vote.entry_id = entry.id AND vote.is_upvote = false
-                    )`),
-          "points",
+            SELECT COALESCE(SUM("value"), 0) 
+            FROM vote 
+            WHERE vote.entry_id = entry.id
+          )`),
+          "point",
         ],
       ],
     },
@@ -45,9 +42,10 @@ const getEntriesByTitleId = async (titleId) => {
 
 const getEntriesByParams = async (data, params) => {
   const { limit, page } = data;
+
   const entries = await Entry.findAndCountAll({
     offset: (page - 1) * limit,
-    // limit: limit,
+    limit: limit,
     order: [["created_at", "DESC"]],
     where: { ...params },
     include: [
@@ -70,14 +68,10 @@ const getEntryByParams = async (params) => {
       include: [
         [
           sequelize.literal(`(
-                        SELECT COUNT(*)
-                        FROM vote
-                        WHERE vote.entry_id = entry.id AND vote.is_upvote = true
-                    ) - (
-                        SELECT COUNT(*)
-                        FROM vote
-                        WHERE vote.entry_id = entry.id AND vote.is_upvote = false
-                    )`),
+            SELECT COALESCE(SUM("value"), 0) 
+            FROM vote 
+            WHERE vote.entry_id = entry.id
+          )`),
           "points",
         ],
       ],

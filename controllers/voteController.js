@@ -6,7 +6,7 @@ const getVoteByParam = async (param) => {
 };
 
 const createVote = async (data) => {
-  const { userId, entryId, is_upvote } = data;
+  const { userId, entryId, value } = data;
   const existingVote = await Vote.findOne({
     where: { user_id: userId, entry_id: entryId },
   });
@@ -15,7 +15,7 @@ const createVote = async (data) => {
   const vote = await Vote.create({
     user_id: userId,
     entry_id: entryId,
-    is_upvote: !!is_upvote,
+    value: value,
   });
   // Return vote
   return vote;

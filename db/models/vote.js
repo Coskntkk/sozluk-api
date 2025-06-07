@@ -3,8 +3,8 @@ const postgres = require("../postgres");
 const Vote = postgres.define(
   "vote",
   {
-    is_upvote: {
-      type: postgres.Sequelize.BOOLEAN,
+    value: {
+      type: postgres.Sequelize.INTEGER,
       allowNull: false,
     },
   },

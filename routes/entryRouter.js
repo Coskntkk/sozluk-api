@@ -16,6 +16,7 @@ const checkAuthentication = require("../middlewares/checkAuthentication");
 const checkAuthorization = require("../middlewares/checkAuthorization");
 const checkReqBody = require("../middlewares/checkReqBody");
 const checkReqParams = require("../middlewares/checkReqParams");
+const AppError = require("../utils/appError");
 
 //* /api/v1/entries/
 // Get an entry by id
@@ -30,7 +31,7 @@ router.get("/:id", async (req, res, next) => {
         user_id: req.user.id,
         entry_id: entry.id,
       });
-      entry.userUpvote = existingVote ? existingVote.is_upvote : null;
+      entry.userUpvote = existingVote ? existingVote.value : null;
     }
     // Send response
     res.status(200).json({
@@ -102,13 +103,20 @@ router.post(
   checkAuthentication(),
   checkAuthorization("vote_create"),
   checkReqParams(["id"]),
-  checkReqBody(["is_upvote"]),
+  checkReqBody(["value"]),
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { is_upvote } = req.body;
+      const { value } = req.body;
+      // Check if exists
+      const existingVote = await getVoteByParam({
+        user_id: req.user.id,
+        entry_id: id,
+      });
+      if (existingVote)
+        throw new AppError("Entry already voted.", 404);
       // Vote
-      const data = { userId: req.user.id, entryId: id, is_upvote };
+      const data = { userId: req.user.id, entryId: id, value };
       const vote = await createVote(data);
       // Send response
       res.status(200).json({
@@ -131,6 +139,13 @@ router.delete(
   async (req, res, next) => {
     try {
       const { id } = req.params;
+      // Check existing
+      const existingVote = await getVoteByParam({
+        user_id: req.user.id,
+        entry_id: id,
+      });
+      if (!existingVote)
+        throw new AppError("Not voted.", 404);
       // Delete Vote
       let opt = acclevelOwner(req.own, req.user);
       opt.push({ id: id });

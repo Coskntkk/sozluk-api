@@ -1,18 +1,21 @@
 // Db
-const { User, Role } = require("../db/models");
+const {
+  User,
+  // Role
+} = require("../db/models");
 const AppError = require("../utils/appError");
 
-const getUsers = async (data) => {
-  const { limit, page } = data;
-  const users = await User.findAndCountAll({
-    offset: (page - 1) * limit,
-    limit: limit,
-    order: [["created_at", "DESC"]],
-    attributes: { exclude: ["password", "refresh_token", "access_token"] },
-    include: [{ model: Role, attributes: ["name", "id"] }],
-  });
-  return users;
-};
+// const getUsers = async (data) => {
+//   const { limit, page } = data;
+//   const users = await User.findAndCountAll({
+//     offset: (page - 1) * limit,
+//     limit: limit,
+//     order: [["created_at", "DESC"]],
+//     attributes: { exclude: ["password", "refresh_token", "access_token"] },
+//     include: [{ model: Role, attributes: ["name", "id"] }],
+//   });
+//   return users;
+// };
 
 const getUserByParams = async (where) => {
   return await User.findOne({
@@ -52,7 +55,7 @@ const createUser = async (data) => {
 };
 
 module.exports = {
-  getUsers,
+  // getUsers,
   getUserByParams,
   getUserByParamsAuth,
   createUser,

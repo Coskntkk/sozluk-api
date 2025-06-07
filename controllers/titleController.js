@@ -12,6 +12,7 @@ const getAllTitles = async (params) => {
   let opt = [];
   if (keyword) opt.push({ name: { [sequelize.Op.like]: `%${keyword}%` } });
   let where = createAndWhere(opt);
+
   const titles = await Title.findAndCountAll({
     where: where,
     offset: (page - 1) * limit,
@@ -21,17 +22,16 @@ const getAllTitles = async (params) => {
     attributes: {
       include: [
         [
-          sequelize.literal(
-            `(
-                            SELECT COUNT(*)
-                            FROM entry
-                            WHERE entry.title_id = title.id
-                        )`,
-          ),
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM entry
+            WHERE entry.title_id = title.id
+          )`),
           "entry_count",
         ],
       ],
     },
+    logging: console.log
   });
   return titles;
 };
@@ -46,10 +46,10 @@ const getLatestTitle = async () => {
       include: [
         [
           sequelize.literal(`(
-                            SELECT COUNT(*)
-                            FROM entry
-                            WHERE entry.title_id = title.id
-                        )`),
+            SELECT COUNT(*)
+            FROM entry
+            WHERE entry.title_id = title.id
+          )`),
           "entry_count",
         ],
       ],
@@ -76,10 +76,10 @@ const getTitleByParams = async (where) => {
       include: [
         [
           sequelize.literal(`(
-                            SELECT COUNT(*)
-                            FROM entry
-                            WHERE entry.title_id = title.id
-                        )`),
+            SELECT COUNT(*)
+            FROM entry
+            WHERE entry.title_id = title.id
+          )`),
           "entry_count",
         ],
       ],
@@ -88,7 +88,7 @@ const getTitleByParams = async (where) => {
 };
 
 // Create an entry by title id
-const createEntryByTitleId = async () => {};
+const createEntryByTitleId = async () => { };
 
 module.exports = {
   getAllTitles,

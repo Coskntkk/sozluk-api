@@ -2,7 +2,6 @@ const { getPermissions } = require("../controllers/permissionController");
 const { getRoles } = require("../controllers/roleController");
 
 const getGlobalValues = async () => {
-  const responses = require("./responses.json");
   // Roles
   let rolesData = await getRoles();
   const roles = {};
@@ -19,7 +18,6 @@ const getGlobalValues = async () => {
   return {
     roles,
     permissions,
-    responses,
   };
 };
 

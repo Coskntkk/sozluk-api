@@ -35,19 +35,24 @@ const globalErrorHandler = require("./utils/globalErrorHandler");
 
 // Routes
 const indexRouter = require("./routes/index");
-app.use("/api/v1", /*require("./middlewares/configureReq")(),*/ indexRouter);
+app.use("/api/v1", indexRouter);
 
 // Error handling middleware
 app.use(globalErrorHandler);
-
 const { getGlobalValues } = require("./utils/getGlobals");
-// const { loadDb } = require('./utils/dbLoad');
+
+const { fillDb } = require('./db/seed/dumps');
+const { createDb } = require('./db/seed/seed');
 (async () => {
-  const { roles, permissions, responses } = await getGlobalValues();
+  const { roles, permissions } = await getGlobalValues();
   global.roles = roles;
   global.permissions = permissions;
-  global.responses = responses;
-  // await loadDb()
+
+  let isFillDb = null;
+  if (isFillDb !== null) {
+    if (isFillDb === true) await fillDb()
+    else await createDb()
+  }
 })();
 
 // Export app
