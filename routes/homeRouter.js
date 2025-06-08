@@ -10,7 +10,7 @@ router.get(
   async (req, res, next) => {
     try {
       let title = await getLatestTitle();
-      let entries = await getEntriesByTitleId(title.id, { page: 1, limit: 10 });
+      let entries = await getEntriesByTitleId(title.id, { page: 1, limit: 10 }, req.user);
       // Return response
       res.status(200).json({
         success: true,

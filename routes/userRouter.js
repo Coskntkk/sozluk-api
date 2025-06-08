@@ -44,16 +44,16 @@ const { createOrWhere } = require("../controllers/scopes");
 
 // Get user by username or id
 router.get(
-  "/:id",
-  checkReqParams(["id"]),
+  "/:username",
+  checkReqParams(["username"]),
   checkAuthorization("user_read"),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { username } = req.params;
       // Find title
       let opt = [];
-      if (isNaN(id)) opt.push({ username: id });
-      else opt.push({ id: id });
+      if (isNaN(username)) opt.push({ username: username });
+      else opt.push({ id: username });
       let where = createOrWhere(opt);
       // Find user
       const user = await getUserByParams(where);
@@ -91,17 +91,22 @@ router.put(
   },
 );
 
-// Get entries by user username
+// Get entries by user id
 router.get(
-  "/:id/entries",
+  "/:username/entries",
   checkAuthorization("entry_read"),
-  checkReqParams(["id"]),
+  checkReqParams(["username"]),
   checkPagination(),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { username } = req.params;
       const { page, limit } = req.query;
-      const entries = await getEntriesByParams(req.query, { user_id: id });
+      let opt = [];
+      if (isNaN(username)) opt.push({ username: username });
+      else opt.push({ id: username });
+      let where = createOrWhere(opt);
+      const user = await getUserByParams(where)
+      const entries = await getEntriesByParams(req.query, { user_id: user.id });
       // Return response
       res.status(200).json({
         success: true,

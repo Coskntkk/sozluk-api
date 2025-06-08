@@ -67,27 +67,29 @@ router.post(
 );
 
 // Verify user email
-router.get("/verify/:token", async (req, res, next) => {
-  try {
-    const { token } = req.params;
-    if (!token) throw new AppError("No token", 400);
-    // Verify token
-    const decoded_token = await verifyVerificationToken(token);
-    const { id, key } = decoded_token;
-    // Check if user exists
-    let user = await getUserByParamsAuth({ id });
-    if (!user || user.email_verify_token !== key)
-      throw new AppError("Invalid token", 400);
-    // Update user
-    user.is_active = true;
-    user.email_verify_token = null;
-    await user.save();
-    // Send response
-    res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get(
+  "/verify/:token",
+  async (req, res, next) => {
+    try {
+      const { token } = req.params;
+      if (!token) throw new AppError("No token", 400);
+      // Verify token
+      const decoded_token = await verifyVerificationToken(token);
+      const { id, key } = decoded_token;
+      // Check if user exists
+      let user = await getUserByParamsAuth({ id });
+      if (!user || user.email_verify_token !== key)
+        throw new AppError("Invalid token", 400);
+      // Update user
+      user.is_active = true;
+      user.email_verify_token = null;
+      await user.save();
+      // Send response
+      res.redirect(`${process.env.CLIENT_URL}/login?verified=true`);
+    } catch (error) {
+      next(error);
+    }
+  });
 
 // Login user
 router.post(
@@ -142,50 +144,56 @@ router.post(
 );
 
 // Logout the user
-router.get("/logout", checkAuthentication(), async (req, res, next) => {
-  try {
-    await updateUserByParam({ id: req.user.id }, { refresh_token: null });
-    // Remove tokens from header
-    res.header("x-refresh-token", "");
-    res.header("x-access-token", "");
-    // Send response
-    res.status(200).json({
-      success: true,
-      data: {},
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get(
+  "/logout",
+  checkAuthentication(),
+  async (req, res, next) => {
+    try {
+      await updateUserByParam({ id: req.user.id }, { refresh_token: null });
+      // Remove tokens from header
+      res.header("x-refresh-token", "");
+      res.header("x-access-token", "");
+      // Send response
+      res.status(200).json({
+        success: true,
+        data: {},
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
 
 // Send password reset email
-router.post("/password", checkReqBody(["email"]), async (req, res, next) => {
-  try {
-    const { email } = req.body;
-    // Check if user exists
-    let user = await getUserByParams({ email });
-    if (!user) throw new AppError("Email not found", 400);
-    // Create verification token and send email
-    const { verification_token, key } = await createVerificationToken(user);
-    const clientUrl =
-      process.env.NODE_ENV === "production"
-        ? process.env.CLIENT_URL
-        : process.env.CLIENT_URL_DEV;
-    await changePassword({
-      email,
-      url: `${clientUrl}/reset-password/${verification_token}`,
-    });
-    user.password_verify_token = key;
-    await user.save();
-    // Send response
-    res.status(200).json({
-      success: true,
-      message: "Password reset mail sent. Please check your mailbox..",
-      data: {},
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+router.post(
+  "/password",
+  checkReqBody(["email"]),
+  async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      // Check if user exists
+      let user = await getUserByParams({ email });
+      if (!user) throw new AppError("Email not found", 400);
+      // Create verification token and send email
+      const { verification_token, key } = await createVerificationToken(user);
+      const clientUrl =
+        process.env.NODE_ENV === "production"
+          ? process.env.CLIENT_URL
+          : process.env.CLIENT_URL_DEV;
+      await changePassword({
+        email,
+        url: `${clientUrl}/reset-password/${verification_token}`,
+      });
+      user.password_verify_token = key;
+      await user.save();
+      // Send response
+      res.status(200).json({
+        success: true,
+        message: "Password reset mail sent. Please check your mailbox..",
+        data: {},
+      });
+    } catch (error) {
+      next(error);
+    }
+  });
 
 module.exports = router;

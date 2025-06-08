@@ -56,7 +56,7 @@ const reportStatuses = [
 ]
 const users = [
     {
-        username: "Cos",
+        username: "cos",
         email: "coskntkk@gmail.com",
         password: "asdasd",
         imageUrl: "https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
@@ -64,7 +64,7 @@ const users = [
         roleId: 4,
     },
     {
-        username: "Cos2",
+        username: "cos2",
         email: "coskntkk2@gmail.com",
         password: "asdasd",
         imageUrl: "https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
@@ -72,7 +72,7 @@ const users = [
         roleId: 3,
     },
     {
-        username: "Cos3",
+        username: "cos3",
         email: "coskntkk3@gmail.com",
         password: "asdasd",
         imageUrl: "https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",
@@ -80,7 +80,7 @@ const users = [
         roleId: 2,
     },
     {
-        username: "Cos4",
+        username: "cos4",
         email: "coskntkk4@gmail.com",
         password: "asdasd",
         imageUrl: "https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png",

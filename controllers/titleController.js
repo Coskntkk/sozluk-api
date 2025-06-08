@@ -31,7 +31,6 @@ const getAllTitles = async (params) => {
         ],
       ],
     },
-    logging: console.log
   });
   return titles;
 };

@@ -11,11 +11,11 @@ const ErrorLog = postgres.define(
       autoIncrement: true,
     },
     message: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
       allowNull: true,
     },
     stack: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
       allowNull: true,
     },
     status: {

@@ -97,9 +97,9 @@ router.get(
       let where = createOrWhere(opt);
       let title = await getTitleByParams(where);
       if (!title) throw new AppError("Title not found.", 400);
-      let entries = await getEntriesByTitleId(title.id, req.query);
+      let entries = await getEntriesByTitleId(title.id, req.query, req.user);
       // Return response
-      res.status(200).send({
+      res.status(200).json({
         success: true,
         data: {
           page: page,

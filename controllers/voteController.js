@@ -2,7 +2,7 @@ const { Vote } = require("../db/models");
 const AppError = require("../utils/appError");
 
 const getVoteByParam = async (param) => {
-  return await Vote.findOne({ ...param });
+  return await Vote.findOne({ where: { ...param } });
 };
 
 const createVote = async (data) => {

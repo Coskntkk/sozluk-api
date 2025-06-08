@@ -34,8 +34,10 @@ if (process.env.NODE_ENV === "development") {
 const globalErrorHandler = require("./utils/globalErrorHandler");
 
 // Routes
+const checkAuthenticationOptional = require("./middlewares/checkAuthenticationOptional");
 const indexRouter = require("./routes/index");
-app.use("/api/v1", indexRouter);
+app.use("/api/v1",
+  checkAuthenticationOptional(), indexRouter);
 
 // Error handling middleware
 app.use(globalErrorHandler);

@@ -12,24 +12,35 @@ const createEntry = async (data) => {
   return await Entry.create({ message, title_id: titleId, user_id: user.id });
 };
 
-const getEntriesByTitleId = async (titleId, query) => {
+const getEntriesByTitleId = async (titleId, query, user) => {
   const { page, limit } = query;
+  const include = [
+    [
+      sequelize.literal(`(
+        SELECT COALESCE(SUM("value"), 0) 
+        FROM vote 
+        WHERE vote.entry_id = entry.id
+      )`),
+      "point",
+    ]
+  ]
+  if (user)
+    include.push([
+      sequelize.literal(`(
+        SELECT value
+        FROM vote
+        WHERE vote.entry_id = entry.id AND vote.user_id = ${user.id}
+        LIMIT 1
+      )`),
+      "userVote"
+    ])
   return await Entry.findAndCountAll({
     where: { title_id: titleId },
     limit: limit,
     offset: limit * (page - 1),
     attributes: {
       exclude: ["user_id", "title_id"],
-      include: [
-        [
-          sequelize.literal(`(
-            SELECT COALESCE(SUM("value"), 0) 
-            FROM vote 
-            WHERE vote.entry_id = entry.id
-          )`),
-          "point",
-        ],
-      ],
+      include: include,
     },
     include: [
       {

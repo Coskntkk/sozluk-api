@@ -20,28 +20,30 @@ const AppError = require("../utils/appError");
 
 //* /api/v1/entries/
 // Get an entry by id
-router.get("/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    // Find entry
-    const entry = await getEntryByParams({ id });
-    // Check if user has voted
-    if (req.user) {
-      const existingVote = await getVoteByParam({
-        user_id: req.user.id,
-        entry_id: entry.id,
+router.get(
+  "/:id",
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      // Find entry
+      const entry = await getEntryByParams({ id });
+      // Check if user has voted
+      if (req.user) {
+        const existingVote = await getVoteByParam({
+          user_id: req.user.id,
+          entry_id: entry.id,
+        });
+        entry.userUpvote = existingVote ? existingVote.value : null;
+      }
+      // Send response
+      res.status(200).json({
+        success: true,
+        data: entry,
       });
-      entry.userUpvote = existingVote ? existingVote.value : null;
+    } catch (error) {
+      next(error);
     }
-    // Send response
-    res.status(200).json({
-      success: true,
-      data: entry,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+  });
 
 // Update an entry by id
 router.put(
@@ -148,7 +150,7 @@ router.delete(
         throw new AppError("Not voted.", 404);
       // Delete Vote
       let opt = acclevelOwner(req.own, req.user);
-      opt.push({ id: id });
+      opt.push({ id: existingVote.id });
       let where = createAndWhere(opt);
       await deleteVoteByParams(where);
       // Send response
