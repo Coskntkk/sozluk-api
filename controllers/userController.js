@@ -32,7 +32,7 @@ const getUserByParams = async (where, user) => {
   ]
   if (user)
     include.push([
-      sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.follower_id = ${user.id})`),
+      sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE (follow.follower_id = ${user.id}) AND follow.following_id = "user"."id")`),
       "isFollowing",
     ])
   return await User.findOne({
