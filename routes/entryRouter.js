@@ -24,19 +24,13 @@ const AppError = require("../utils/appError");
 // Get an entry by id
 router.get(
   "/:id",
+  checkReqParams(["id"]),
   async (req, res, next) => {
     try {
       const { id } = req.params;
       // Find entry
-      const entry = await getEntryByParams({ id });
-      // Check if user has voted
-      if (req.user) {
-        const existingVote = await getVoteByParam({
-          user_id: req.user.id,
-          entry_id: entry.id,
-        });
-        entry.userUpvote = existingVote ? existingVote.value : null;
-      }
+      const entry = await getEntryByParams({ id }, req.user);
+      console.log(entry);
       // Send response
       res.status(200).json({
         success: true,

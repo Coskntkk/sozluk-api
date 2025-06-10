@@ -15,7 +15,26 @@ const AppError = require("../utils/appError");
 //   return users;
 // };
 
-const getUserByParams = async (where) => {
+const getRawUserByParams = async (where) => {
+  return await User.findOne({ where })
+}
+
+const getUserByParams = async (where, user) => {
+  const include = [
+    [
+      sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.following_id = "user"."id")`),
+      "followerCount",
+    ],
+    [
+      sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.follower_id = "user"."id")`),
+      "followingCount",
+    ],
+  ]
+  if (user)
+    include.push([
+      sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.follower_id = ${user.id})`),
+      "isFollowing",
+    ])
   return await User.findOne({
     where: where,
     attributes: {
@@ -28,16 +47,7 @@ const getUserByParams = async (where) => {
         "password_verify_token",
         "deletedAt",
       ],
-      include: [
-        [
-          sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.following_id = "user"."id")`),
-          "followerCount",
-        ],
-        [
-          sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.follower_id = "user"."id")`),
-          "followingCount",
-        ]
-      ]
+      include: include
     },
   });
 };
@@ -65,6 +75,7 @@ const createUser = async (data) => {
 module.exports = {
   // getUsers,
   getUserByParams,
+  getRawUserByParams,
   getUserByParamsAuth,
   createUser,
   updateUserByParam,

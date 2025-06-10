@@ -11,11 +11,13 @@ const {
   // getUsers,
   updateUserByParam,
   getUserByParams,
+  getRawUserByParams,
 } = require("../controllers/userController");
 const { getEntriesByParams } = require("../controllers/entryController");
 const { createOrWhere } = require("../controllers/scopes");
-const { getFollowByParams, createFollow } = require("../controllers/followController");
+const { createFollow, deleteFollow } = require("../controllers/followController");
 const AppError = require("../utils/appError");
+const checkAuthenticationOptional = require("../middlewares/checkAuthenticationOptional");
 
 // Set routes
 
@@ -47,6 +49,7 @@ const AppError = require("../utils/appError");
 // Get user by username or id
 router.get(
   "/:username",
+  checkAuthenticationOptional(),
   checkReqParams(["username"]),
   checkAuthorization("user_read"),
   async (req, res, next) => {
@@ -58,7 +61,7 @@ router.get(
       else opt.push({ id: username });
       let where = createOrWhere(opt);
       // Find user
-      const user = await getUserByParams(where);
+      const user = await getUserByParams(where, req.user);
       // Return response
       res.status(200).json({
         success: true,
@@ -125,21 +128,45 @@ router.get(
   },
 );
 
-// Get entries by user id
+// Follow user
 router.get(
   "/:username/follow",
   checkReqParams(["username"]),
   async (req, res, next) => {
     try {
       const { username } = req.params;
-      const userToFollow = await getUserByParams({ username })
+      const userToFollow = await getRawUserByParams({ username })
       if (!userToFollow || !req.user) throw new AppError('User not found.', 404)
       const body = {
         following_id: userToFollow.id,
         follower_id: req.user.id
       }
-      await getFollowByParams(body)
       const follow = await createFollow(body)
+      // Return response
+      res.status(200).json({
+        success: true,
+        data: follow
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// Unfollow user
+router.delete(
+  "/:username/unfollow",
+  checkReqParams(["username"]),
+  async (req, res, next) => {
+    try {
+      const { username } = req.params;
+      const userToFollow = await getRawUserByParams({ username })
+      if (!userToFollow || !req.user) throw new AppError('User not found.', 404)
+      const body = {
+        following_id: userToFollow.id,
+        follower_id: req.user.id
+      }
+      const follow = await deleteFollow(body)
       // Return response
       res.status(200).json({
         success: true,

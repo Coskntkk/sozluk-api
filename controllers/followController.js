@@ -11,8 +11,8 @@ const createFollow = async (params) => {
     return await Follow.create(params)
 }
 
-const deleteFollow = async (id) => {
-    const follow = await Follow.findByPk(id)
+const deleteFollow = async (where) => {
+    const follow = await Follow.findOne({ where })
     if (!follow) throw new AppError('Follow not found.', 404)
     await follow.destroy()
 }

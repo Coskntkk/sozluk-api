@@ -75,23 +75,32 @@ const getRawEntryByParams = async (where) => {
   return entry
 }
 
-const getEntryByParams = async (params) => {
-  return await Entry.findAndCountAll({
+const getEntryByParams = async (params, user) => {
+  const include = [
+    [
+      sequelize.literal(`(
+        SELECT COALESCE(SUM("value"), 0) 
+        FROM vote 
+        WHERE vote.entry_id = entry.id
+      )`),
+      "point",
+    ]
+  ]
+  if (user)
+    include.push([
+      sequelize.literal(`(
+        SELECT value
+        FROM vote
+        WHERE vote.entry_id = entry.id AND vote.user_id = ${user.id}
+        LIMIT 1
+      )`),
+      "userVote"
+    ])
+  return await Entry.findOne({
     where: { ...params },
-    limit: 10,
-    offset: 0,
     attributes: {
       exclude: ["user_id", "title_id"],
-      include: [
-        [
-          sequelize.literal(`(
-            SELECT COALESCE(SUM("value"), 0) 
-            FROM vote 
-            WHERE vote.entry_id = entry.id
-          )`),
-          "points",
-        ],
-      ],
+      include: include
     },
     include: [
       {
