@@ -17,7 +17,6 @@ router.get(
             const { limit, page } = req.query;
             let notifications = await getNotificationsByUserId(req.user.id, { page, limit });
             // Return response
-            console.log(notifications);
             res.status(200).json({
                 success: true,
                 data: {

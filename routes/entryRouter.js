@@ -30,7 +30,6 @@ router.get(
       const { id } = req.params;
       // Find entry
       const entry = await getEntryByParams({ id }, req.user);
-      console.log(entry);
       // Send response
       res.status(200).json({
         success: true,

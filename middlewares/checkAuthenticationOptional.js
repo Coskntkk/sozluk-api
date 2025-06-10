@@ -21,7 +21,7 @@ const checkAuthenticationOptional = () => {
       // Continue
       return next();
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       next();
     }
   });

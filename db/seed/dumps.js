@@ -27,7 +27,6 @@ const fillDb = async () => {
         // TITLES
         for (let i = 0; i < 20; i++) {
             let text = await generateBaconIpsum()
-            console.log(text);
             await Title.create({ name: text })
         }
         // ENTRIES
