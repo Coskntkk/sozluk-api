@@ -3,7 +3,9 @@ const {
   getEntryByParams,
   deleteEntryByParam,
   updateEntryByParam,
+  getRawEntryByParams,
 } = require("../controllers/entryController");
+const { createNotification } = require("../controllers/notificationController");
 const { acclevelOwner, createAndWhere } = require("../controllers/scopes");
 const {
   getVoteByParam,
@@ -120,6 +122,14 @@ router.post(
       // Vote
       const data = { userId: req.user.id, entryId: id, value };
       const vote = await createVote(data);
+      // Notification
+      const entry = await getRawEntryByParams({ id: id })
+      await createNotification({
+        message: `Your entry is ${value === 1 ? "up" : "down"}voted.`,
+        link: `/e/${id}`,
+        read: false,
+        user_id: entry.user_id
+      })
       // Send response
       res.status(200).json({
         success: true,

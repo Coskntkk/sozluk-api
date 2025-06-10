@@ -8,11 +8,6 @@ const Entry = postgres.define(
       type: Sequelize.STRING(280),
       allowNull: false,
     },
-    point: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      default: 0
-    },
   },
   {
     timestamps: true,

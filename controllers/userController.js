@@ -1,8 +1,6 @@
 // Db
-const {
-  User,
-  // Role
-} = require("../db/models");
+const sequelize = require("sequelize");
+const { User } = require("../db/models");
 const AppError = require("../utils/appError");
 
 // const getUsers = async (data) => {
@@ -30,6 +28,16 @@ const getUserByParams = async (where) => {
         "password_verify_token",
         "deletedAt",
       ],
+      include: [
+        [
+          sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.following_id = "user"."id")`),
+          "followerCount",
+        ],
+        [
+          sequelize.literal(`(SELECT COUNT(*) FROM follow WHERE follow.follower_id = "user"."id")`),
+          "followingCount",
+        ]
+      ]
     },
   });
 };

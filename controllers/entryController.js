@@ -69,6 +69,12 @@ const getEntriesByParams = async (data, params) => {
   return entries;
 };
 
+const getRawEntryByParams = async (where) => {
+  const entry = await Entry.findOne(...where)
+  if (!entry) throw new AppError('Entry not found.', 404)
+  return entry
+}
+
 const getEntryByParams = async (params) => {
   return await Entry.findAndCountAll({
     where: { ...params },
@@ -118,11 +124,18 @@ const deleteEntryByParam = async (where) => {
   await entry.destroy();
 };
 
+const countEntriesWithParam = async (where) => {
+  const count = await Entry.count({ where: where });
+  return count
+}
+
 module.exports = {
   createEntry,
   getEntriesByTitleId,
+  getRawEntryByParams,
   getEntryByParams,
   getEntriesByParams,
   updateEntryByParam,
   deleteEntryByParam,
+  countEntriesWithParam
 };

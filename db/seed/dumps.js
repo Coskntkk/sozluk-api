@@ -15,7 +15,6 @@ const generateBaconIpsum = async () => {
     };
 
     let resp = await axios.get(config.url)
-    console.log("Quote: '", resp.data, "'");
     return resp.data
 };
 

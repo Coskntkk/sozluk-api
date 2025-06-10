@@ -9,6 +9,8 @@ const Model = require("./models/model");
 const ErrorLog = require("./models/error_log");
 const Report = require("./models/report");
 const ReportStatus = require("./models/repost_status");
+const Follow = require("./models/follow");
+const Notification = require("./models/notification")
 
 // Relationships
 // User - Role
@@ -34,6 +36,25 @@ Entry.hasMany(Vote, { foreignKey: "entry_id" });
 // Vote - User
 Vote.belongsTo(User, { foreignKey: "user_id" });
 User.hasMany(Vote, { foreignKey: "user_id" });
+
+// Follow - User
+User.belongsToMany(User, {
+  through: Follow,
+  as: 'Followers',
+  foreignKey: 'following_id',
+  otherKey: 'follower_id'
+});
+
+User.belongsToMany(User, {
+  through: Follow,
+  as: 'Followings',
+  foreignKey: 'follower_id',
+  otherKey: 'following_id'
+});
+
+// Notification
+Notification.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(Notification, { foreignKey: "user_id" });
 
 // Report
 User.hasMany(Report, {
@@ -63,6 +84,8 @@ module.exports = {
   User,
   Role,
   Permission,
+  Follow,
+  Notification,
   Title,
   Entry,
   Vote,

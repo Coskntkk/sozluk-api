@@ -10,6 +10,12 @@ const Vote = postgres.define(
   },
   {
     timestamps: true,
+    // indexes: [
+    //   {
+    //     unique: true,
+    //     fields: ['entry_id', 'user_id']
+    //   }
+    // ]
   },
 );
 

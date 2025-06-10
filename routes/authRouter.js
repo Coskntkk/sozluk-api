@@ -114,7 +114,7 @@ router.post(
         success: true,
         message: "Login successful.",
         access_token: access_token,
-        refresh_token: refresh_token
+        refresh_token: refresh_token,
       });
     } catch (error) {
       next(error);

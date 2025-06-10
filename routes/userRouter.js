@@ -14,6 +14,8 @@ const {
 } = require("../controllers/userController");
 const { getEntriesByParams } = require("../controllers/entryController");
 const { createOrWhere } = require("../controllers/scopes");
+const { getFollowByParams, createFollow } = require("../controllers/followController");
+const AppError = require("../utils/appError");
 
 // Set routes
 
@@ -70,15 +72,15 @@ router.get(
 
 // Update user by id
 router.put(
-  "/:id",
+  "/:username",
   checkAuthentication(),
   checkAuthorization("user_update"),
-  checkReqParams(["id"]),
+  checkReqParams(["username"]),
   async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { username } = req.params;
       // Update use
-      const user = await updateUserByParam({ id }, req.body);
+      const user = await updateUserByParam({ username }, req.body);
       // Return response
       res.status(200).json({
         success: true,
@@ -116,6 +118,32 @@ router.get(
           total: entries.count,
           items: entries.rows,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// Get entries by user id
+router.get(
+  "/:username/follow",
+  checkReqParams(["username"]),
+  async (req, res, next) => {
+    try {
+      const { username } = req.params;
+      const userToFollow = await getUserByParams({ username })
+      if (!userToFollow || !req.user) throw new AppError('User not found.', 404)
+      const body = {
+        following_id: userToFollow.id,
+        follower_id: req.user.id
+      }
+      await getFollowByParams(body)
+      const follow = await createFollow(body)
+      // Return response
+      res.status(200).json({
+        success: true,
+        data: follow
       });
     } catch (error) {
       next(error);

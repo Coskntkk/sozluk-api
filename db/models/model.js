@@ -7,7 +7,6 @@ const Model = postgres.define(
     name: {
       type: Sequelize.STRING,
       allowNull: false,
-      default: true,
     },
   },
   {
