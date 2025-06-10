@@ -12,7 +12,8 @@ const getNotificationsByUserId = async (userId, query) => {
     return await Notification.findAndCountAll({
         where: { user_id: userId },
         limit: limit,
-        offset: limit * (page - 1),
+        offset: (page - 1) * limit,
+        order: [["created_at", "DESC"]],
     });
 };
 

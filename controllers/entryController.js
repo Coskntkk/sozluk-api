@@ -70,7 +70,7 @@ const getEntriesByParams = async (data, params) => {
 };
 
 const getRawEntryByParams = async (where) => {
-  const entry = await Entry.findOne(...where)
+  const entry = await Entry.findOne({ where })
   if (!entry) throw new AppError('Entry not found.', 404)
   return entry
 }

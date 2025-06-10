@@ -37,6 +37,7 @@ router.get(
         data: {
           page: page,
           limit: limit,
+          total_pages: Math.ceil(titles.count / limit),
           total: titles.count,
           items: titles.rows,
         },
