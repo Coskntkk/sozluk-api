@@ -20,8 +20,9 @@ const checkAuthenticationOptional = () => {
       res.header("x-access-token", token);
       // Continue
       return next();
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       next();
     }
   });
