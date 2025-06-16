@@ -118,7 +118,7 @@ router.post(
       // Notification
       const entry = await getRawEntryByParams({ id: id })
       await createNotification({
-        message: `Your entry is ${value === 1 ? "up" : "down"}voted.`,
+        message: `entry_${value === 1 ? "up" : "down"}voted`,
         link: `/e/${id}`,
         read: false,
         user_id: entry.user_id
