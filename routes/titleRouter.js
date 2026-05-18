@@ -12,6 +12,7 @@ const {
   getTitleByParams,
   getAllTitles,
   createTitle,
+  searchTitlesBySlug,
 } = require("../controllers/titleController");
 const {
   getEntriesByTitleId,
@@ -80,6 +81,25 @@ router.post(
   },
 );
 
+// Search title by slug
+router.get(
+  "/search",
+  async (req, res, next) => {
+    try {
+      const { slug } = req.query;
+      if (!slug) throw new AppError("slug query parameter is required.", 400);
+      const normalizedSlug = slugify(String(slug), { lower: true });
+      let titles = await searchTitlesBySlug(normalizedSlug);
+      res.status(200).json({
+        success: true,
+        data: titles,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 // Get title by slug or id
 router.get(
   "/:id",
@@ -97,7 +117,7 @@ router.get(
       } else opt.push({ id: id });
       let where = createOrWhere(opt);
       let title = await getTitleByParams(where);
-      if (!title) throw new AppError("Title not found.", 400);
+      if (!title) throw new AppError("Title not found.", 404);
       let entries = await getEntriesByTitleId(title.id, req.query, req.user);
       // Return response
       res.status(200).json({

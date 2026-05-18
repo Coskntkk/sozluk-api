@@ -115,15 +115,15 @@ const getEntryByParams = async (params, user) => {
   });
 };
 
-const updateEntryByParam = async (where, data) => {
-  let entry = await Entry.findOne({ where: where });
-  if (!entry) throw new AppError("Entry not found.", 404);
-  Object.keys(data).forEach((key) => {
-    entry[key] = data[key];
-  });
-  await entry.save();
-  return entry.toJSON();
-};
+// const updateEntryByParam = async (where, data) => {
+//   let entry = await Entry.findOne({ where: where });
+//   if (!entry) throw new AppError("Entry not found.", 404);
+//   Object.keys(data).forEach((key) => {
+//     entry[key] = data[key];
+//   });
+//   await entry.save();
+//   return entry.toJSON();
+// };
 
 const deleteEntryByParam = async (where) => {
   // Find Entry
@@ -144,7 +144,7 @@ module.exports = {
   getRawEntryByParams,
   getEntryByParams,
   getEntriesByParams,
-  updateEntryByParam,
+  // updateEntryByParam,
   deleteEntryByParam,
   countEntriesWithParam
 };

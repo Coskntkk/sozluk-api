@@ -2,7 +2,7 @@ const router = require("express").Router();
 const {
   getEntryByParams,
   deleteEntryByParam,
-  updateEntryByParam,
+  // updateEntryByParam,
   getRawEntryByParams,
 } = require("../controllers/entryController");
 const { createNotification } = require("../controllers/notificationController");
@@ -40,33 +40,33 @@ router.get(
     }
   });
 
-// Update an entry by id
-router.put(
-  "/:id",
-  checkAuthentication(),
-  checkAuthorization("entry_update"),
-  checkReqParams(["id"]),
-  checkReqBody(["message"]),
-  async (req, res, next) => {
-    try {
-      const { id } = req.params;
-      const { message } = req.body;
-      // Update entry
-      let opt = acclevelOwner(req.own, req.user);
-      opt.push({ id: id });
-      let where = createAndWhere(opt);
-      let entry = await updateEntryByParam(where, { message });
-      // Send response
-      res.status(200).json({
-        success: true,
-        message: "Entry updated.",
-        data: entry,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
+// // Update an entry by id
+// router.put(
+//   "/:id",
+//   checkAuthentication(),
+//   checkAuthorization("entry_update"),
+//   checkReqParams(["id"]),
+//   checkReqBody(["message"]),
+//   async (req, res, next) => {
+//     try {
+//       const { id } = req.params;
+//       const { message } = req.body;
+//       // Update entry
+//       let opt = acclevelOwner(req.own, req.user);
+//       opt.push({ id: id });
+//       let where = createAndWhere(opt);
+//       let entry = await updateEntryByParam(where, { message });
+//       // Send response
+//       res.status(200).json({
+//         success: true,
+//         message: "Entry updated.",
+//         data: entry,
+//       });
+//     } catch (error) {
+//       next(error);
+//     }
+//   },
+// );
 
 // Delete an entry by id
 router.delete(

@@ -12,14 +12,26 @@ const app = express();
 // Database connections
 require("./db/postgres");
 
-// Express middlewares
+const allowedOrigins = new Set(
+  [
+    process.env.CLIENT_URL,
+    process.env.CLIENT_URL_DEV,
+    ...(process.env.NODE_ENV !== "production"
+      ? ["http://localhost:3001", "http://127.0.0.1:3001"]
+      : []),
+  ].filter(Boolean),
+);
+
 app.use(
   cors({
-    origin: true,
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.has(origin)) return callback(null, true);
+      return callback(null, false);
+    },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    exposedHeaders: ["x-total-count", "x-access-token", "x-refresh-token"],
-    domain: ["http://localhost:3030", "http://localhost:3030"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    exposedHeaders: ["x-total-count"],
   }),
 );
 app.use(express.json());

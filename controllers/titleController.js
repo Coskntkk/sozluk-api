@@ -86,6 +86,28 @@ const getTitleByParams = async (where) => {
   });
 };
 
+// Search titles by slug
+const searchTitlesBySlug = async (slug) => {
+  return await Title.findAll({
+    where: { slug: { [sequelize.Op.iLike]: `%${slug}%` } },
+    order: [["updated_at", "DESC"]],
+    attributes: {
+      include: [
+        [
+          sequelize.literal(`(
+            SELECT COUNT(*)
+            FROM entry
+            WHERE entry.title_id = title.id
+          )`),
+          "entry_count",
+        ],
+        "id",
+        "name"
+      ],
+    },
+  });
+};
+
 // Create an entry by title id
 const createEntryByTitleId = async () => { };
 
@@ -94,5 +116,6 @@ module.exports = {
   getLatestTitle,
   createTitle,
   getTitleByParams,
+  searchTitlesBySlug,
   createEntryByTitleId,
 };

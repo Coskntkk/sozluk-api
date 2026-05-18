@@ -17,7 +17,6 @@ const { getEntriesByParams } = require("../controllers/entryController");
 const { createOrWhere } = require("../controllers/scopes");
 const { createFollow, deleteFollow } = require("../controllers/followController");
 const AppError = require("../utils/appError");
-const checkAuthenticationOptional = require("../middlewares/checkAuthenticationOptional");
 
 // Set routes
 
@@ -49,7 +48,6 @@ const checkAuthenticationOptional = require("../middlewares/checkAuthenticationO
 // Get user by username or id
 router.get(
   "/:username",
-  checkAuthenticationOptional(),
   checkReqParams(["username"]),
   checkAuthorization("user_read"),
   async (req, res, next) => {

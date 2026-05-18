@@ -4,29 +4,37 @@ const { User } = require("../db/models");
 const jwt = require("jsonwebtoken");
 // Utils
 const catchAsync = require("../utils/catchAsync");
+const { checkIsAccessTokenValid } = require("../utils/authFunctions");
+const { getAccessToken } = require("../utils/authCookies");
 
-// Checks if the client is authenticated
 const checkAuthenticationOptional = () => {
   return catchAsync(async (req, res, next) => {
+    req.user = null;
     try {
-      const token = req.headers["x-access-token"];
-      if (!token)
-        return next();
+      const token = getAccessToken(req);
+      if (!token) return next();
+
       const tokenDecoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      const cnt = await User.count({ where: { id: tokenDecoded.user.id } });
-      if (!cnt || cnt <= 0)
-        return next();
+      if (!tokenDecoded.user?.id) return next();
+
+      const user = await User.findOne({
+        where: { id: tokenDecoded.user.id },
+        attributes: ["id", "is_active"],
+      });
+      if (!user || !user.is_active) return next();
+
+      const sessionValid = await checkIsAccessTokenValid(token, user);
+      if (!sessionValid) return next();
+
       req.user = tokenDecoded.user;
-      res.header("x-access-token", token);
-      // Continue
       return next();
-    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      // console.log(error);
-      next();
+      if (error.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Access token expired" });
+      }
+      return next();
     }
   });
 };
 
-// Export
 module.exports = checkAuthenticationOptional;
