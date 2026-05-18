@@ -6,6 +6,9 @@ const morgan = require("morgan");
 const compression = require("compression");
 const cors = require("cors");
 
+// Middlewares
+const { globalLimiter } = require("./middlewares/rateLimit");
+
 // Express app instance
 const app = express();
 
@@ -48,6 +51,10 @@ const globalErrorHandler = require("./utils/globalErrorHandler");
 // Routes
 const checkAuthenticationOptional = require("./middlewares/checkAuthenticationOptional");
 const indexRouter = require("./routes/index");
+
+// Apply global rate limiter to all API routes
+app.use("/api/v1", globalLimiter);
+// Mount routes with optional authentication
 app.use("/api/v1",
   checkAuthenticationOptional(), indexRouter);
 

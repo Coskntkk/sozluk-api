@@ -90,6 +90,7 @@ const getTitleByParams = async (where) => {
 const searchTitlesBySlug = async (slug) => {
   return await Title.findAll({
     where: { slug: { [sequelize.Op.iLike]: `%${slug}%` } },
+    limit: 10,
     order: [["updated_at", "DESC"]],
     attributes: {
       include: [
